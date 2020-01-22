@@ -37,7 +37,7 @@ int numUdpServers = 0;
 
 /**
  * Set up UDP servers (both v5 and v6).  Clean up old ones if necessary.
- */
+
 void initMilightUdpServers() {
   udpServers.clear();
 
@@ -59,6 +59,7 @@ void initMilightUdpServers() {
     }
   }
 }
+ */
 
 /**
  * Milight RF packet handler.
@@ -95,7 +96,7 @@ void onPacketSentHandler(uint8_t* packet, const MiLightRemoteConfig& config) {
     // Copy state before setting it to avoid group 0 re-initialization clobbering it
     stateStore->set(bulbId, stateUpdates);
   }
-
+  /*
   if (mqttClient) {
     // Sends the state delta derived from the raw packet
     char output[200];
@@ -109,6 +110,7 @@ void onPacketSentHandler(uint8_t* packet, const MiLightRemoteConfig& config) {
   }
 
   httpServer->handlePacketSent(packet, remoteConfig);
+   */
 }
 
 /**
@@ -153,22 +155,23 @@ void handleListen() {
 /**
  * Called when MqttClient#update is first being processed.  Stop sending updates
  * and aggregate state changes until the update is finished.
- */
+
 void onUpdateBegin() {
   if (bulbStateUpdater) {
     bulbStateUpdater->disable();
   }
 }
 
-/**
+
  * Called when MqttClient#update is finished processing.  Re-enable state
  * updates, which will flush accumulated state changes.
- */
+
 void onUpdateEnd() {
   if (bulbStateUpdater) {
     bulbStateUpdater->enable();
   }
 }
+ */
 
 /**
  * Apply what's in the Settings object.
@@ -177,6 +180,7 @@ void applySettings() {
   if (milightClient) {
     delete milightClient;
   }
+  /*
   if (mqttClient) {
     delete mqttClient;
     delete bulbStateUpdater;
@@ -184,6 +188,7 @@ void applySettings() {
     mqttClient = NULL;
     bulbStateUpdater = NULL;
   }
+   */
   if (stateStore) {
     delete stateStore;
   }
@@ -214,6 +219,7 @@ void applySettings() {
     settings,
     transitions
   );
+  /*
   milightClient->onUpdateBegin(onUpdateBegin);
   milightClient->onUpdateEnd(onUpdateEnd);
 
@@ -233,8 +239,6 @@ void applySettings() {
     bulbStateUpdater = new BulbStateUpdater(settings, *mqttClient, *stateStore);
   }
 
-  initMilightUdpServers();
-
   if (discoveryServer) {
     delete discoveryServer;
     discoveryServer = NULL;
@@ -243,13 +247,14 @@ void applySettings() {
     discoveryServer = new MiLightDiscoveryServer(settings);
     discoveryServer->begin();
   }
+  */
 
   // update LED pin and operating mode
   if (ledStatus) {
     ledStatus->changePin(settings.ledPin);
     ledStatus->continuous(settings.ledModeOperating);
   }
-
+/*
   WiFi.hostname(settings.hostname);
 
   WiFiPhyMode_t wifiMode;
@@ -266,6 +271,7 @@ void applySettings() {
       break;
   }
   WiFi.setPhyMode(wifiMode);
+  */
 }
 
 /**
@@ -285,12 +291,15 @@ void handleLED() {
 }
 
 void wifiExtraSettingsChange() {
+  /*
   settings.wifiStaticIP = wifiStaticIP->getValue();
   settings.wifiStaticIPNetmask = wifiStaticIPNetmask->getValue();
   settings.wifiStaticIPGateway = wifiStaticIPGateway->getValue();
+   */
   settings.save();
 }
 
+/*
 // Called when a group is deleted via the REST API.  Will publish an empty message to
 // the MQTT topic to delete retained state
 void onGroupDeleted(const BulbId& id) {
@@ -303,6 +312,7 @@ void onGroupDeleted(const BulbId& id) {
     );
   }
 }
+ */
 
 void setup() {
   // load up our persistent settings from the file system
@@ -313,11 +323,12 @@ void setup() {
   ledStatus = new LEDStatus(settings.ledPin);
   ledStatus->continuous(settings.ledModeWifiConfig);
 
-
+/*
   httpServer = new MiLightHttpServer(settings, milightClient, stateStore, packetSender, radios, transitions);
   httpServer->onSettingsSaved(applySettings);
   httpServer->onGroupDeleted(onGroupDeleted);
   httpServer->begin();
+  */
 
   transitions.addListener(
     [](const BulbId& bulbId, GroupStateField field, uint16_t value) {
@@ -335,6 +346,7 @@ void setup() {
 }
 
 void loop() {
+  /*
   httpServer->handleClient();
 
   if (mqttClient) {
@@ -349,6 +361,7 @@ void loop() {
   if (discoveryServer) {
     discoveryServer->handleClient();
   }
+   */
 
   handleListen();
 
@@ -362,7 +375,8 @@ void loop() {
 
   if (shouldRestart()) {
     printf("Auto-restart triggered. Restarting...\n");
-    ESP.restart();
+    //TODO implement restart
+    //ESP.restart();
   }
 }
 

@@ -95,7 +95,7 @@ public:
   void handleCommands(JsonArray commands);
   bool handleTransition(JsonObject args, JsonDocument& responseObj);
   void handleTransition(GroupStateField field, JsonVariant value, float duration, int16_t startValue = FETCH_VALUE_FROM_STATE);
-  void handleEffect(const String& effect);
+  void handleEffect(const std::string& effect);
 
   void onUpdateBegin(EventHandler handler);
   void onUpdateEnd(EventHandler handler);

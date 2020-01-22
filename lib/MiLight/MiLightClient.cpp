@@ -406,7 +406,7 @@ void MiLightClient::handleCommands(JsonArray commands) {
 }
 
 void MiLightClient::handleCommand(JsonVariant command) {
-  String cmdName;
+  std::string cmdName;
   JsonObject args;
 
   if (command.is<JsonObject>()) {
@@ -610,7 +610,7 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
   return true;
 }
 
-void MiLightClient::handleEffect(const String& effect) {
+void MiLightClient::handleEffect(const std::string& effect) {
   if (effect == MiLightCommandNames::NIGHT_MODE) {
     this->enableNightMode();
   } else if (effect == "white" || effect == "white_mode") {
