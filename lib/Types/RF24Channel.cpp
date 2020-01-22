@@ -7,7 +7,7 @@ static const char* RF24_CHANNEL_NAMES[] = {
   "HIGH"
 };
 
-String RF24ChannelHelpers::nameFromValue(const RF24Channel& value) {
+std::string RF24ChannelHelpers::nameFromValue(const RF24Channel& value) {
   const size_t ix = static_cast<size_t>(value);
 
   if (ix >= size(RF24_CHANNEL_NAMES)) {
@@ -18,7 +18,7 @@ String RF24ChannelHelpers::nameFromValue(const RF24Channel& value) {
   return RF24_CHANNEL_NAMES[ix];
 }
 
-RF24Channel RF24ChannelHelpers::valueFromName(const String& name) {
+RF24Channel RF24ChannelHelpers::valueFromName(const std::string& name) {
   for (size_t i = 0; i < size(RF24_CHANNEL_NAMES); ++i) {
     if (name == RF24_CHANNEL_NAMES[i]) {
       return static_cast<RF24Channel>(i);

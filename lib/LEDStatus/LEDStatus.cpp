@@ -134,7 +134,7 @@ void LEDStatus::LEDStatus::handle() {
 }
 
 // helper function to convert an LEDMode enum to a string
-String LEDStatus::LEDModeToString(LEDStatus::LEDMode mode) {
+std::string LEDStatus::LEDModeToString(LEDStatus::LEDMode mode) {
   switch (mode) {
     case LEDStatus::LEDMode::Off:
       return "Off";
@@ -156,7 +156,7 @@ String LEDStatus::LEDModeToString(LEDStatus::LEDMode mode) {
 }
 
 // helper function to convert a string to an LEDMode enum (note, mismatch returns LedMode::Unknown)
-LEDStatus::LEDMode LEDStatus::stringToLEDMode(String mode) {
+LEDStatus::LEDMode LEDStatus::stringToLEDMode(std::string mode) {
   if (mode == "Off")
     return LEDStatus::LEDMode::Off;
   if (mode == "Slow toggle")

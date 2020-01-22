@@ -1,4 +1,4 @@
-#include <string.h>
+#include <string>
 
 #ifndef _LED_STATUS_H
 #define _LED_STATUS_H
@@ -22,8 +22,8 @@ class LEDStatus {
     void oneshot(LEDMode mode, uint8_t count = 1);
     void oneshot(uint16_t ledOffMs, uint16_t ledOnMs, uint8_t count = 1);
 
-    static String LEDModeToString(LEDMode mode);
-    static LEDMode stringToLEDMode(String mode);
+    static std::string LEDModeToString(LEDMode mode);
+    static LEDMode stringToLEDMode(std::string mode);
 
     void handle();
 

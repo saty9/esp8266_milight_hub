@@ -9,6 +9,7 @@
 #include <FUT091PacketFormatter.h>
 #include <FUT020PacketFormatter.h>
 #include <PacketFormatter.h>
+#include "string"
 
 #ifndef _MILIGHT_REMOTE_CONFIG_H
 #define _MILIGHT_REMOTE_CONFIG_H
@@ -19,7 +20,7 @@ public:
     PacketFormatter* packetFormatter,
     MiLightRadioConfig& radioConfig,
     const MiLightRemoteType type,
-    const String name,
+    const std::string name,
     const size_t numGroups
   ) : packetFormatter(packetFormatter),
       radioConfig(radioConfig),
@@ -31,11 +32,11 @@ public:
   PacketFormatter* const packetFormatter;
   const MiLightRadioConfig& radioConfig;
   const MiLightRemoteType type;
-  const String name;
+  const std::string name;
   const size_t numGroups;
 
   static const MiLightRemoteConfig* fromType(MiLightRemoteType type);
-  static const MiLightRemoteConfig* fromType(const String& type);
+  static const MiLightRemoteConfig* fromType(const std::string& type);
   static const MiLightRemoteConfig* fromReceivedPacket(const MiLightRadioConfig& radioConfig, const uint8_t* packet, const size_t len);
 
   static const size_t NUM_REMOTES;

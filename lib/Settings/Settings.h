@@ -4,6 +4,7 @@
 #include <RF24Channel.h>
 #include <Size.h>
 #include <LEDStatus.h>
+#include "string"
 //#include <StringStream.h>
 
 #include <MiLightRemoteType.h>
@@ -123,30 +124,30 @@ public:
   ~Settings() { }
 
   bool isAuthenticationEnabled() const;
-  const String& getUsername() const;
-  const String& getPassword() const;
+  const std::string& getUsername() const;
+  const std::string& getPassword() const;
 
   bool isAutoRestartEnabled();
   size_t getAutoRestartPeriod();
 
   static void load(Settings& settings);
 
-  static RadioInterfaceType typeFromString(const String& s);
-  static String typeToString(RadioInterfaceType type);
+  static RadioInterfaceType typeFromString(const std::string& s);
+  static std::string typeToString(RadioInterfaceType type);
   static std::vector<RF24Channel> defaultListenChannels();
 
   void save();
-  String toJson(const bool prettyPrint = true);
-  void serialize(Print& stream, const bool prettyPrint = false);
+  std::string toJson(const bool prettyPrint = true);
+  void serialize(std::ifstream& stream, const bool prettyPrint = false);
   void updateDeviceIds(JsonArray arr);
   void updateGatewayConfigs(JsonArray arr);
   void patch(JsonObject obj);
-  String mqttServer();
+  std::string mqttServer();
   uint16_t mqttPort();
-  std::map<String, BulbId>::const_iterator findAlias(MiLightRemoteType deviceType, uint16_t deviceId, uint8_t groupId);
+  std::map<std::string, BulbId>::const_iterator findAlias(MiLightRemoteType deviceType, uint16_t deviceId, uint8_t groupId);
 
-  String adminUsername;
-  String adminPassword;
+  std::string adminUsername;
+  std::string adminPassword;
   uint8_t cePin;
   uint8_t csnPin;
   uint8_t resetPin;
@@ -156,13 +157,13 @@ public:
   size_t httpRepeatFactor;
   uint8_t listenRepeats;
   uint16_t discoveryPort;
-  String _mqttServer;
-  String mqttUsername;
-  String mqttPassword;
-  String mqttTopicPattern;
-  String mqttUpdateTopicPattern;
-  String mqttStateTopicPattern;
-  String mqttClientStatusTopic;
+  std::string _mqttServer;
+  std::string mqttUsername;
+  std::string mqttPassword;
+  std::string mqttTopicPattern;
+  std::string mqttUpdateTopicPattern;
+  std::string mqttStateTopicPattern;
+  std::string mqttClientStatusTopic;
   bool simpleMqttClientStatus;
   size_t stateFlushInterval;
   size_t mqttStateRateLimit;
@@ -175,20 +176,20 @@ public:
   LEDStatus::LEDMode ledModeOperating;
   LEDStatus::LEDMode ledModePacket;
   size_t ledModePacketCount;
-  String hostname;
+  std::string hostname;
   RF24PowerLevel rf24PowerLevel;
   std::vector<uint16_t> deviceIds;
   std::vector<RF24Channel> rf24Channels;
   std::vector<GroupStateField> groupStateFields;
   std::vector<std::shared_ptr<GatewayConfig>> gatewayConfigs;
   RF24Channel rf24ListenChannel;
-  String wifiStaticIP;
-  String wifiStaticIPNetmask;
-  String wifiStaticIPGateway;
+  std::string wifiStaticIP;
+  std::string wifiStaticIPNetmask;
+  std::string wifiStaticIPGateway;
   size_t packetRepeatsPerLoop;
-  std::map<String, BulbId> groupIdAliases;
+  std::map<std::string, BulbId> groupIdAliases;
   std::map<uint32_t, BulbId> deletedGroupIdAliases;
-  String homeAssistantDiscoveryPrefix;
+  std::string homeAssistantDiscoveryPrefix;
   WifiMode wifiMode;
   uint16_t defaultTransitionPeriod;
 
@@ -198,8 +199,8 @@ protected:
   void parseGroupIdAliases(JsonObject json);
   void dumpGroupIdAliases(JsonObject json);
 
-  static WifiMode wifiModeFromString(const String& mode);
-  static String wifiModeToString(WifiMode mode);
+  static WifiMode wifiModeFromString(const std::string& mode);
+  static std::string wifiModeToString(WifiMode mode);
 
   template <typename T>
   void setIfPresent(JsonObject obj, const char* key, T& var) {

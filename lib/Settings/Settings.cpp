@@ -16,11 +16,11 @@ bool Settings::isAuthenticationEnabled() const {
   return adminUsername.length() > 0 && adminPassword.length() > 0;
 }
 
-const String& Settings::getUsername() const {
+const std::string& Settings::getUsername() const {
   return adminUsername;
 }
 
-const String& Settings::getPassword() const {
+const std::string& Settings::getPassword() const {
   return adminPassword;
 }
 
@@ -50,6 +50,7 @@ void Settings::updateGatewayConfigs(JsonArray arr) {
   for (size_t i = 0; i < arr.size(); i++) {
     JsonArray params = arr[i];
 
+    /*
     if (params.size() == 3) {
       std::shared_ptr<GatewayConfig> ptr = std::make_shared<GatewayConfig>(parseInt<uint16_t>(params[0]), params[1], params[2]);
       gatewayConfigs.push_back(std::move(ptr));
@@ -57,6 +58,7 @@ void Settings::updateGatewayConfigs(JsonArray arr) {
       Serial.print(F("Settings - skipped parsing gateway ports settings for element #"));
       Serial.println(i);
     }
+     */
   }
 }
 
@@ -106,7 +108,7 @@ void Settings::patch(JsonObject parsedSettings) {
 
   if (parsedSettings.containsKey("rf24_channels")) {
     JsonArray arr = parsedSettings["rf24_channels"];
-    rf24Channels = JsonHelpers::jsonArrToVector<RF24Channel, String>(arr, RF24ChannelHelpers::valueFromName);
+    rf24Channels = JsonHelpers::jsonArrToVector<RF24Channel, std::string>(arr, RF24ChannelHelpers::valueFromName);
   }
 
   if (parsedSettings.containsKey("rf24_listen_channel")) {
@@ -155,7 +157,7 @@ void Settings::patch(JsonObject parsedSettings) {
   }
 }
 
-std::map<String, BulbId>::const_iterator Settings::findAlias(MiLightRemoteType deviceType, uint16_t deviceId, uint8_t groupId) {
+std::map<std::string, BulbId>::const_iterator Settings::findAlias(MiLightRemoteType deviceType, uint16_t deviceId, uint8_t groupId) {
   BulbId searchId{ deviceId, groupId, deviceType };
 
   for (auto it = groupIdAliases.begin(); it != groupIdAliases.end(); ++it) {
@@ -183,7 +185,7 @@ void Settings::parseGroupIdAliases(JsonObject json) {
     BulbId bulbId = {
       bulbIdProps[1].as<uint16_t>(),
       bulbIdProps[2].as<uint8_t>(),
-      MiLightRemoteTypeHelpers::remoteTypeFromString(bulbIdProps[0].as<String>())
+      MiLightRemoteTypeHelpers::remoteTypeFromString(bulbIdProps[0].as<std::string>())
     };
     groupIdAliases[kv.key().c_str()] = bulbId;
 
@@ -195,7 +197,7 @@ void Settings::parseGroupIdAliases(JsonObject json) {
 void Settings::dumpGroupIdAliases(JsonObject json) {
   JsonObject aliases = json.createNestedObject("group_id_aliases");
 
-  for (std::map<String, BulbId>::iterator itr = groupIdAliases.begin(); itr != groupIdAliases.end(); ++itr) {
+  for (std::map<std::string, BulbId>::iterator itr = groupIdAliases.begin(); itr != groupIdAliases.end(); ++itr) {
     JsonArray bulbProps = aliases.createNestedArray(itr->first);
     BulbId bulbId = itr->second;
     bulbProps.add(MiLightRemoteTypeHelpers::remoteTypeToString(bulbId.deviceType));
@@ -226,11 +228,11 @@ void Settings::load(Settings& settings) {
   }
 }
 
-String Settings::toJson(const bool prettyPrint) {
-  String buffer = "";
+std::string Settings::toJson(const bool prettyPrint) {
+  std::string buffer = "";
   std::string s;
   serialize(s, prettyPrint);
-  return String(buffer);
+  return std::string(buffer);
 }
 
 void Settings::save() {
@@ -244,7 +246,7 @@ void Settings::save() {
   }
 }
 
-void Settings::serialize(std::string &stream, const bool prettyPrint) {
+void Settings::serialize(std::ifstream &stream, const bool prettyPrint) {
   DynamicJsonDocument root(MILIGHT_HUB_SETTINGS_BUFFER_SIZE);
 
   root["admin_username"] = this->adminUsername;
@@ -290,7 +292,7 @@ void Settings::serialize(std::string &stream, const bool prettyPrint) {
   root["default_transition_period"] = this->defaultTransitionPeriod;
 
   JsonArray channelArr = root.createNestedArray("rf24_channels");
-  JsonHelpers::vectorToJsonArr<RF24Channel, String>(channelArr, rf24Channels, RF24ChannelHelpers::nameFromValue);
+  JsonHelpers::vectorToJsonArr<RF24Channel, std::string>(channelArr, rf24Channels, RF24ChannelHelpers::nameFromValue);
 
   JsonArray deviceIdsArr = root.createNestedArray("device_ids");
   JsonHelpers::copyFrom<uint16_t>(deviceIdsArr, this->deviceIds);
@@ -315,7 +317,7 @@ void Settings::serialize(std::string &stream, const bool prettyPrint) {
   }
 }
 
-String Settings::mqttServer() {
+std::string Settings::mqttServer() {
   int pos = PORT_POSITION(_mqttServer);
 
   if (pos == -1) {
@@ -335,7 +337,7 @@ uint16_t Settings::mqttPort() {
   }
 }
 
-RadioInterfaceType Settings::typeFromString(const String& s) {
+RadioInterfaceType Settings::typeFromString(const std::string& s) {
   if (s.equalsIgnoreCase("lt8900")) {
     return LT8900;
   } else {
@@ -343,7 +345,7 @@ RadioInterfaceType Settings::typeFromString(const String& s) {
   }
 }
 
-String Settings::typeToString(RadioInterfaceType type) {
+std::string Settings::typeToString(RadioInterfaceType type) {
   switch (type) {
     case LT8900:
       return "LT8900";
@@ -354,7 +356,7 @@ String Settings::typeToString(RadioInterfaceType type) {
   }
 }
 
-WifiMode Settings::wifiModeFromString(const String& mode) {
+WifiMode Settings::wifiModeFromString(const std::string& mode) {
   if (mode.equalsIgnoreCase("b")) {
     return WifiMode::B;
   } else if (mode.equalsIgnoreCase("g")) {
@@ -364,7 +366,7 @@ WifiMode Settings::wifiModeFromString(const String& mode) {
   }
 }
 
-String Settings::wifiModeToString(WifiMode mode) {
+std::string Settings::wifiModeToString(WifiMode mode) {
   switch (mode) {
     case WifiMode::B:
       return "b";

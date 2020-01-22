@@ -9,7 +9,7 @@ static const char* REMOTE_NAME_RGB     = "rgb";
 static const char* REMOTE_NAME_FUT091  = "fut091";
 static const char* REMOTE_NAME_FUT020  = "fut020";
 
-const MiLightRemoteType MiLightRemoteTypeHelpers::remoteTypeFromString(const String& type) {
+const MiLightRemoteType MiLightRemoteTypeHelpers::remoteTypeFromString(const std::string& type) {
   if (type.equalsIgnoreCase(REMOTE_NAME_RGBW) || type.equalsIgnoreCase("fut096")) {
     return REMOTE_TYPE_RGBW;
   }
@@ -38,13 +38,13 @@ const MiLightRemoteType MiLightRemoteTypeHelpers::remoteTypeFromString(const Str
     return REMOTE_TYPE_FUT020;
   }
 
-  Serial.print(F("remoteTypeFromString: ERROR - tried to fetch remote config for type: "));
-  Serial.println(type);
+  printf("remoteTypeFromString: ERROR - tried to fetch remote config for type: ");
+  printf("%s\n", type.c_str());
 
   return REMOTE_TYPE_UNKNOWN;
 }
 
-const String MiLightRemoteTypeHelpers::remoteTypeToString(const MiLightRemoteType type) {
+const std::string MiLightRemoteTypeHelpers::remoteTypeToString(const MiLightRemoteType type) {
   switch (type) {
     case REMOTE_TYPE_RGBW:
       return REMOTE_NAME_RGBW;

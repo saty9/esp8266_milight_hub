@@ -25,6 +25,7 @@ const T strToHex(const char* s, size_t length) {
   return value;
 }
 
+/*
 template <typename T>
 const T strToHex(const String& s) {
   return strToHex<T>(s.c_str(), s.length());
@@ -38,6 +39,7 @@ const T parseInt(const String& s) {
     return s.toInt();
   }
 }
+*/
 
 template <typename T>
 void hexStrToBytes(const char* s, const size_t sLen, T* buffer, size_t maxLen) {
