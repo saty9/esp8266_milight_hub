@@ -1,5 +1,5 @@
 #include <GroupStatePersistence.h>
-#include <FS.h>
+#include <fstream>
 
 static const char FILE_PREFIX[] = "group_states/";
 
@@ -7,9 +7,8 @@ void GroupStatePersistence::get(const BulbId &id, GroupState& state) {
   char path[30];
   memset(path, 0, 30);
   buildFilename(id, path);
-
-  if (SPIFFS.exists(path)) {
-    File f = SPIFFS.open(path, "r");
+  std::ifstream f(path, std::ios_base::in);
+  if (f.good()){
     state.load(f);
     f.close();
   }
@@ -20,7 +19,7 @@ void GroupStatePersistence::set(const BulbId &id, const GroupState& state) {
   memset(path, 0, 30);
   buildFilename(id, path);
 
-  File f = SPIFFS.open(path, "w");
+  std::ifstream f(path, std::ios_base::out);
   state.dump(f);
   f.close();
 }
@@ -29,8 +28,12 @@ void GroupStatePersistence::clear(const BulbId &id) {
   char path[30];
   buildFilename(id, path);
 
-  if (SPIFFS.exists(path)) {
-    SPIFFS.remove(path);
+  std::ifstream f(path, std::ios_base::in);
+  if (f.good()){
+    f.close();
+    std::remove(path);
+  } else {
+    f.close();
   }
 }
 

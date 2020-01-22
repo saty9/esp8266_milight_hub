@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <inttypes.h>
 #include <functional>
 #include <MiLightRemoteType.h>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
 
 enum MiLightRemoteType {
   REMOTE_TYPE_UNKNOWN = 255,

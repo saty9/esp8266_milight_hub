@@ -1,12 +1,10 @@
-#include <Arduino.h>
-#include <StringStream.h>
 #include <ArduinoJson.h>
 #include <GroupStateField.h>
 #include <RF24PowerLevel.h>
 #include <RF24Channel.h>
 #include <Size.h>
 #include <LEDStatus.h>
-#include <AuthProviders.h>
+//#include <StringStream.h>
 
 #include <MiLightRemoteType.h>
 #include <BulbId.h>

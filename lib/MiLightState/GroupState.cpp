@@ -142,11 +142,11 @@ bool GroupState::isEqualIgnoreDirty(const GroupState& other) const {
 
   return meCopy == otherCopy;
 }
-
+/*
 void GroupState::print(Stream& stream) const {
   stream.printf("State: %08X %08X\n", state.rawData[0], state.rawData[1]);
 }
-
+*/
 bool GroupState::clearField(GroupStateField field) {
   bool clearedAny = false;
 
@@ -609,14 +609,14 @@ bool GroupState::clearMqttDirty() {
   return true;
 }
 
-void GroupState::load(Stream& stream) {
+void GroupState::load(std::ifstream &stream) {
   for (size_t i = 0; i < DATA_LONGS; i++) {
     stream.readBytes(reinterpret_cast<uint8_t*>(&state.rawData[i]), 4);
   }
   clearDirty();
 }
 
-void GroupState::dump(Stream& stream) const {
+void GroupState::dump(ifstream &stream) const {
   for (size_t i = 0; i < DATA_LONGS; i++) {
     stream.write(reinterpret_cast<const uint8_t*>(&state.rawData[i]), 4);
   }

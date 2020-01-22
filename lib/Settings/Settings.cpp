@@ -1,6 +1,5 @@
 #include <Settings.h>
 #include <ArduinoJson.h>
-#include <FS.h>
 #include <IntParsing.h>
 #include <algorithm>
 #include <JsonHelpers.h>
@@ -206,11 +205,10 @@ void Settings::dumpGroupIdAliases(JsonObject json) {
 }
 
 void Settings::load(Settings& settings) {
-  if (SPIFFS.exists(SETTINGS_FILE)) {
+  std::ifstream f(SETTINGS_FILE, std::ios_base::in);
+  if (f.good()) {
     // Clear in-memory settings
     settings = Settings();
-
-    File f = SPIFFS.open(SETTINGS_FILE, "r");
 
     DynamicJsonDocument json(MILIGHT_HUB_SETTINGS_BUFFER_SIZE);
     auto error = deserializeJson(json, f);
@@ -230,23 +228,23 @@ void Settings::load(Settings& settings) {
 
 String Settings::toJson(const bool prettyPrint) {
   String buffer = "";
-  StringStream s(buffer);
+  std::string s;
   serialize(s, prettyPrint);
-  return buffer;
+  return String(buffer);
 }
 
 void Settings::save() {
-  File f = SPIFFS.open(SETTINGS_FILE, "w");
+  std::ifstream f(SETTINGS_FILE, std::ios_base::out);
 
-  if (!f) {
-    Serial.println(F("Opening settings file failed"));
+  if (!f.good()) {
+    printf("Opening settings file failed\n");
   } else {
     serialize(f);
     f.close();
   }
 }
 
-void Settings::serialize(Print& stream, const bool prettyPrint) {
+void Settings::serialize(std::string &stream, const bool prettyPrint) {
   DynamicJsonDocument root(MILIGHT_HUB_SETTINGS_BUFFER_SIZE);
 
   root["admin_username"] = this->adminUsername;

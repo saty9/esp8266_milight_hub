@@ -1,10 +1,7 @@
 #ifndef UNIT_TEST
 
-#include <SPI.h>
-#include <WiFiManager.h>
 #include <ArduinoJson.h>
 #include <stdlib.h>
-#include <FS.h>
 #include <IntParsing.h>
 #include <Size.h>
 #include <LinkedList.h>
@@ -12,30 +9,15 @@
 #include <GroupStateStore.h>
 #include <MiLightRadioConfig.h>
 #include <MiLightRemoteConfig.h>
-#include <MiLightHttpServer.h>
 #include <MiLightRemoteType.h>
 #include <Settings.h>
-#include <MiLightUdpServer.h>
-#include <ESP8266mDNS.h>
-#include <ESP8266SSDP.h>
-#include <MqttClient.h>
-#include <RGBConverter.h>
-#include <MiLightDiscoveryServer.h>
 #include <MiLightClient.h>
-#include <BulbStateUpdater.h>
 #include <RadioSwitchboard.h>
 #include <PacketSender.h>
-#include <HomeAssistantDiscoveryClient.h>
 #include <TransitionController.h>
 
 #include <vector>
 #include <memory>
-
-WiFiManager wifiManager;
-// because of callbacks, these need to be in the higher scope :(
-WiFiManagerParameter* wifiStaticIP = NULL;
-WiFiManagerParameter* wifiStaticIPNetmask = NULL;
-WiFiManagerParameter* wifiStaticIPGateway = NULL;
 
 static LEDStatus *ledStatus;
 
@@ -45,19 +27,13 @@ MiLightClient* milightClient = NULL;
 RadioSwitchboard* radios = nullptr;
 PacketSender* packetSender = nullptr;
 std::shared_ptr<MiLightRadioFactory> radioFactory;
-MiLightHttpServer *httpServer = NULL;
-MqttClient* mqttClient = NULL;
-MiLightDiscoveryServer* discoveryServer = NULL;
 uint8_t currentRadioType = 0;
 
 // For tracking and managing group state
 GroupStateStore* stateStore = NULL;
-BulbStateUpdater* bulbStateUpdater = NULL;
 TransitionController transitions;
 
 int numUdpServers = 0;
-std::vector<std::shared_ptr<MiLightUdpServer>> udpServers;
-WiFiUDP udpSeder;
 
 /**
  * Set up UDP servers (both v5 and v6).  Clean up old ones if necessary.
@@ -76,8 +52,7 @@ void initMilightUdpServers() {
     );
 
     if (server == NULL) {
-      Serial.print(F("Error creating UDP server with protocol version: "));
-      Serial.println(config.protocolVersion);
+      printf("Error creating UDP server with protocol version: %s\n", config.protocolVersion);
     } else {
       udpServers.push_back(std::move(server));
       udpServers[i]->begin();
@@ -101,7 +76,7 @@ void onPacketSentHandler(uint8_t* packet, const MiLightRemoteConfig& config) {
   ledStatus->oneshot(settings.ledModePacket, settings.ledModePacketCount);
 
   if (&bulbId == &DEFAULT_BULB_ID) {
-    Serial.println(F("Skipping packet handler because packet was not decoded"));
+    printf("Skipping packet handler because packet was not decoded\n");
     return;
   }
 
@@ -164,7 +139,7 @@ void handleListen() {
       if (remoteConfig == NULL) {
         // This can happen under normal circumstances, so not an error condition
 #ifdef DEBUG_PRINTF
-        Serial.println(F("WARNING: Couldn't find remote for received packet"));
+        printf("WARNING: Couldn't find remote for received packet\n");
 #endif
         return;
       }
@@ -224,7 +199,7 @@ void applySettings() {
   radioFactory = MiLightRadioFactory::fromSettings(settings);
 
   if (radioFactory == NULL) {
-    Serial.println(F("ERROR: unable to construct radio factory"));
+    printf("ERROR: unable to construct radio factory");
   }
 
   stateStore = new GroupStateStore(MILIGHT_MAX_STATE_ITEMS, settings.stateFlushInterval);
@@ -330,11 +305,7 @@ void onGroupDeleted(const BulbId& id) {
 }
 
 void setup() {
-  Serial.begin(9600);
-  String ssid = "ESP" + String(ESP.getChipId());
-
   // load up our persistent settings from the file system
-  SPIFFS.begin();
   Settings::load(settings);
   applySettings();
 
@@ -342,89 +313,10 @@ void setup() {
   ledStatus = new LEDStatus(settings.ledPin);
   ledStatus->continuous(settings.ledModeWifiConfig);
 
-  // start up the wifi manager
-  if (! MDNS.begin("milight-hub")) {
-    Serial.println(F("Error setting up MDNS responder"));
-  }
-  // tell Wifi manager to call us during the setup.  Note that this "setSetupLoopCallback" is an addition
-  // made to Wifi manager in a private fork.  As of this writing, WifiManager has a new feature coming that
-  // allows the "autoConnect" method to be non-blocking which can implement this same functionality.  However,
-  // that change is only on the development branch so we are going to continue to use this fork until
-  // that is merged and ready.
-  wifiManager.setSetupLoopCallback(handleLED);
-
-  // Allows us to have static IP config in the captive portal. Yucky pointers to pointers, just to have the settings carry through
-  wifiManager.setSaveConfigCallback(wifiExtraSettingsChange);
-
-  wifiStaticIP = new WiFiManagerParameter(
-    "staticIP",
-    "Static IP (Leave blank for dhcp)",
-    settings.wifiStaticIP.c_str(),
-    MAX_IP_ADDR_LEN
-  );
-  wifiManager.addParameter(wifiStaticIP);
-
-  wifiStaticIPNetmask = new WiFiManagerParameter(
-    "netmask",
-    "Netmask (required if IP given)",
-    settings.wifiStaticIPNetmask.c_str(),
-    MAX_IP_ADDR_LEN
-  );
-  wifiManager.addParameter(wifiStaticIPNetmask);
-
-  wifiStaticIPGateway = new WiFiManagerParameter(
-    "gateway",
-    "Default Gateway (optional, only used if static IP)",
-    settings.wifiStaticIPGateway.c_str(),
-    MAX_IP_ADDR_LEN
-  );
-  wifiManager.addParameter(wifiStaticIPGateway);
-
-  // We have a saved static IP, let's try and use it.
-  if (settings.wifiStaticIP.length() > 0) {
-    Serial.printf_P(PSTR("We have a static IP: %s\n"), settings.wifiStaticIP.c_str());
-
-    IPAddress _ip, _subnet, _gw;
-    _ip.fromString(settings.wifiStaticIP);
-    _subnet.fromString(settings.wifiStaticIPNetmask);
-    _gw.fromString(settings.wifiStaticIPGateway);
-
-    wifiManager.setSTAStaticIPConfig(_ip,_gw,_subnet);
-  }
-
-  wifiManager.setConfigPortalTimeout(180);
-
-  if (wifiManager.autoConnect(ssid.c_str(), "milightHub")) {
-    // set LED mode for successful operation
-    ledStatus->continuous(settings.ledModeOperating);
-    Serial.println(F("Wifi connected succesfully\n"));
-
-    // if the config portal was started, make sure to turn off the config AP
-    WiFi.mode(WIFI_STA);
-  } else {
-    // set LED mode for Wifi failed
-    ledStatus->continuous(settings.ledModeWifiFailed);
-    Serial.println(F("Wifi failed.  Restarting in 10 seconds.\n"));
-
-    delay(10000);
-    ESP.restart();
-  }
-
-
-  MDNS.addService("http", "tcp", 80);
-
-  SSDP.setSchemaURL("description.xml");
-  SSDP.setHTTPPort(80);
-  SSDP.setName("ESP8266 MiLight Gateway");
-  SSDP.setSerialNumber(ESP.getChipId());
-  SSDP.setURL("/");
-  SSDP.setDeviceType("upnp:rootdevice");
-  SSDP.begin();
 
   httpServer = new MiLightHttpServer(settings, milightClient, stateStore, packetSender, radios, transitions);
   httpServer->onSettingsSaved(applySettings);
   httpServer->onGroupDeleted(onGroupDeleted);
-  httpServer->on("/description.xml", HTTP_GET, []() { SSDP.schema(httpServer->client()); });
   httpServer->begin();
 
   transitions.addListener(
@@ -439,7 +331,7 @@ void setup() {
     }
   );
 
-  Serial.printf_P(PSTR("Setup complete (version %s)\n"), QUOTE(MILIGHT_HUB_VERSION));
+  printf("Setup complete (version %s)\n", QUOTE(MILIGHT_HUB_VERSION));
 }
 
 void loop() {
@@ -469,7 +361,7 @@ void loop() {
   transitions.loop();
 
   if (shouldRestart()) {
-    Serial.println(F("Auto-restart triggered. Restarting..."));
+    printf("Auto-restart triggered. Restarting...\n");
     ESP.restart();
   }
 }

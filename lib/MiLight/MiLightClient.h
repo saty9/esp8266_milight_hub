@@ -1,5 +1,4 @@
 #include <functional>
-#include <Arduino.h>
 #include <MiLightRadio.h>
 #include <MiLightRadioFactory.h>
 #include <MiLightRemoteConfig.h>

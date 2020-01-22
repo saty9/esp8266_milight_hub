@@ -1,0 +1,21 @@
+[submodule "includes/CircularBuffer"]
+	path = includes/CircularBuffer
+	url = https://github.com/rlogiacco/CircularBuffer.git
+[submodule "includes/PiDuino_Library"]
+	path = includes/PiDuino_Library
+	url = https://github.com/NVSL/PiDuino_Library.git
+[submodule "includes/RF24"]
+	path = includes/RF24
+	url = https://github.com/nRF24/RF24.git
+[submodule "includes/WiringPi"]
+	path = includes/WiringPi
+	url = https://github.com/WiringPi/WiringPi.git
+[submodule "includes/rich_http_server"]
+	path = includes/rich_http_server
+	url = https://github.com/sidoh/rich_http_server.git
+[submodule "includes/path_variable_handlers"]
+	path = includes/path_variable_handlers
+	url = https://github.com/sidoh/path_variable_handlers.git
+[submodule "includes/arduinoWebSockets"]
+	path = includes/arduinoWebSockets
+	url = https://github.com/Links2004/arduinoWebSockets.git
