@@ -42,5 +42,5 @@ add_custom_target(
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/includes/RF24"
 )
 #add_executable(myexecutable myexcutable.c)
-target_link_libraries(milight_hub includes/RF24/build)
+target_link_libraries(milight_hub PUBLIC rf24)
 add_dependencies(milight_hub RF24)
