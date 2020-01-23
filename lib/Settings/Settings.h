@@ -3,7 +3,7 @@
 #include <RF24PowerLevel.h>
 #include <RF24Channel.h>
 #include <Size.h>
-#include <LEDStatus.h>
+//#include <LEDStatus.h>
 #include "string"
 //#include <StringStream.h>
 
@@ -105,11 +105,13 @@ public:
     packetRepeatThrottleSensitivity(0),
     packetRepeatMinimum(3),
     enableAutomaticModeSwitching(false),
+    /*
     ledModeWifiConfig(LEDStatus::LEDMode::FastToggle),
     ledModeWifiFailed(LEDStatus::LEDMode::On),
     ledModeOperating(LEDStatus::LEDMode::SlowBlip),
     ledModePacket(LEDStatus::LEDMode::Flicker),
     ledModePacketCount(3),
+     */
     hostname("milight-hub"),
     rf24PowerLevel(RF24PowerLevelHelpers::defaultValue()),
     rf24Channels(RF24ChannelHelpers::allValues()),
@@ -171,10 +173,12 @@ public:
   size_t packetRepeatThrottleSensitivity;
   size_t packetRepeatMinimum;
   bool enableAutomaticModeSwitching;
+  /*
   LEDStatus::LEDMode ledModeWifiConfig;
   LEDStatus::LEDMode ledModeWifiFailed;
   LEDStatus::LEDMode ledModeOperating;
   LEDStatus::LEDMode ledModePacket;
+   */
   size_t ledModePacketCount;
   std::string hostname;
   RF24PowerLevel rf24PowerLevel;

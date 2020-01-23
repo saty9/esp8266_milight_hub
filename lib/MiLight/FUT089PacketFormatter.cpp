@@ -94,7 +94,7 @@ void FUT089PacketFormatter::enableNightMode() {
 
 BulbId FUT089PacketFormatter::parsePacket(const uint8_t *packet, JsonObject result) {
   if (stateStore == NULL) {
-    Serial.println(F("ERROR: stateStore not set.  Prepare was not called!  **THIS IS A BUG**"));
+    printf("ERROR: stateStore not set.  Prepare was not called!  **THIS IS A BUG**\n");
     BulbId fakeId(0, 0, REMOTE_TYPE_FUT089);
     return fakeId;
   }
@@ -133,7 +133,8 @@ BulbId FUT089PacketFormatter::parsePacket(const uint8_t *packet, JsonObject resu
     uint16_t hue = Units::rescale<uint16_t, uint16_t>(rescaledColor, 360, 255.0);
     result[GroupStateFieldNames::HUE] = hue;
   } else if (command == FUT089_BRIGHTNESS) {
-    uint8_t level = constrain(arg, 0, 100);
+    uint8_t level = arg;
+    if (arg > 100) {level = 100;} else if (arg < 0) {level = 0;}
     result[GroupStateFieldNames::BRIGHTNESS] = Units::rescale<uint8_t, uint8_t>(level, 255, 100);
   // saturation == kelvin. arg ranges are the same, so can't distinguish
   // without using state
@@ -141,7 +142,9 @@ BulbId FUT089PacketFormatter::parsePacket(const uint8_t *packet, JsonObject resu
     const GroupState* state = stateStore->get(bulbId);
 
     if (state != NULL && state->getBulbMode() == BULB_MODE_COLOR) {
-      result[GroupStateFieldNames::SATURATION] = 100 - constrain(arg, 0, 100);
+      uint8_t level = arg;
+      if (arg > 100) {level = 100;} else if (arg < 0) {level = 0;}
+      result[GroupStateFieldNames::SATURATION] = 100 - level;
     } else {
       result[GroupStateFieldNames::COLOR_TEMP] = Units::whiteValToMireds(100 - arg, 100);
     }

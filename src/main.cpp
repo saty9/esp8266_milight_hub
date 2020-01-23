@@ -5,7 +5,7 @@
 #include <IntParsing.h>
 #include <Size.h>
 #include <LinkedList.h>
-#include <LEDStatus.h>
+//#include <LEDStatus.h>
 #include <GroupStateStore.h>
 #include <MiLightRadioConfig.h>
 #include <MiLightRemoteConfig.h>
@@ -19,7 +19,7 @@
 #include <vector>
 #include <memory>
 
-static LEDStatus *ledStatus;
+//static LEDStatus *ledStatus;
 
 Settings settings;
 
@@ -74,7 +74,7 @@ void onPacketSentHandler(uint8_t* packet, const MiLightRemoteConfig& config) {
   BulbId bulbId = config.packetFormatter->parsePacket(packet, result);
 
   // set LED mode for a packet movement
-  ledStatus->oneshot(settings.ledModePacket, settings.ledModePacketCount);
+  //ledStatus->oneshot(settings.ledModePacket, settings.ledModePacketCount);
 
   if (&bulbId == &DEFAULT_BULB_ID) {
     printf("Skipping packet handler because packet was not decoded\n");
@@ -247,14 +247,13 @@ void applySettings() {
     discoveryServer = new MiLightDiscoveryServer(settings);
     discoveryServer->begin();
   }
-  */
 
   // update LED pin and operating mode
   if (ledStatus) {
     ledStatus->changePin(settings.ledPin);
     ledStatus->continuous(settings.ledModeOperating);
   }
-/*
+
   WiFi.hostname(settings.hostname);
 
   WiFiPhyMode_t wifiMode;
@@ -285,10 +284,12 @@ bool shouldRestart() {
   return settings.getAutoRestartPeriod()*60*1000 < millis();
 }
 
+/*
 // give a bit of time to update the status LED
 void handleLED() {
   ledStatus->handle();
 }
+ */
 
 void wifiExtraSettingsChange() {
   /*
@@ -320,8 +321,8 @@ void setup() {
   applySettings();
 
   // set up the LED status for wifi configuration
-  ledStatus = new LEDStatus(settings.ledPin);
-  ledStatus->continuous(settings.ledModeWifiConfig);
+  //ledStatus = new LEDStatus(settings.ledPin);
+  //ledStatus->continuous(settings.ledModeWifiConfig);
 
 /*
   httpServer = new MiLightHttpServer(settings, milightClient, stateStore, packetSender, radios, transitions);
@@ -369,7 +370,7 @@ void loop() {
   packetSender->loop();
 
   // update LED with status
-  ledStatus->handle();
+  //ledStatus->handle();
 
   transitions.loop();
 

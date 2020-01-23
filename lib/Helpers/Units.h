@@ -1,5 +1,6 @@
-#include <Arduino.h>
 #include <inttypes.h>
+#include "math.h"
+#include <algorithm>
 
 #ifndef _UNITS_H
 #define _UNITS_H
@@ -16,8 +17,14 @@ public:
   }
 
   static uint8_t miredsToWhiteVal(uint16_t mireds, uint8_t maxValue = 255) {
+      uint16_t clamped_mireds = mireds;
+      if (clamped_mireds > COLOR_TEMP_MAX_MIREDS) {
+        clamped_mireds = COLOR_TEMP_MAX_MIREDS;
+      } else if (clamped_mireds < COLOR_TEMP_MIN_MIREDS) {
+        clamped_mireds = COLOR_TEMP_MIN_MIREDS;
+      }
       return rescale<uint16_t, uint16_t>(
-        constrain(mireds, COLOR_TEMP_MIN_MIREDS, COLOR_TEMP_MAX_MIREDS) - COLOR_TEMP_MIN_MIREDS,
+        clamped_mireds - COLOR_TEMP_MIN_MIREDS,
         maxValue,
         (COLOR_TEMP_MAX_MIREDS - COLOR_TEMP_MIN_MIREDS)
       );

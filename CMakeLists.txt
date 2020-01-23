@@ -1,46 +1,117 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+project(milight_hub)
 
-# set the project name
-project("milight_hub" VERSION 0.1)
+set(CMAKE_CXX_STANDARD 14)
 
-# add the executable
-add_executable(milight_hub src/main.cpp)
+include_directories(includes)
+include_directories(includes/single_json)
+include_directories(lib/DataStructures)
+include_directories(lib/Helpers)
+include_directories(lib/LEDStatus)
+include_directories(lib/MiLight)
+include_directories(lib/MiLightState)
+include_directories(lib/Radio)
+include_directories(lib/Settings)
+include_directories(lib/SSDP)
+include_directories(lib/Transitions)
+include_directories(lib/Types)
+include_directories(includes/RF24)
+include_directories(includes/CircularBuffer)
 
-target_include_directories(milight_hub PUBLIC
-        "${PROJECT_BINARY_DIR}"
-        )
+add_executable(milight_hub
+        includes/single_json/ArduinoJson.h
+        lib/DataStructures/LinkedList.h
+        lib/Helpers/IntParsing.h
+        lib/Helpers/JsonHelpers.h
+        lib/Helpers/Size.h
+        lib/Helpers/Units.h
+        #lib/LEDStatus/LEDStatus.cpp
+        #lib/LEDStatus/LEDStatus.h
+        lib/MiLight/CctPacketFormatter.cpp
+        lib/MiLight/CctPacketFormatter.h
+        lib/MiLight/FUT020PacketFormatter.cpp
+        lib/MiLight/FUT020PacketFormatter.h
+        lib/MiLight/FUT02xPacketFormatter.cpp
+        lib/MiLight/FUT02xPacketFormatter.h
+        lib/MiLight/FUT089PacketFormatter.cpp
+        lib/MiLight/FUT089PacketFormatter.h
+        lib/MiLight/FUT091PacketFormatter.cpp
+        lib/MiLight/FUT091PacketFormatter.h
+        lib/MiLight/MiLightClient.cpp
+        lib/MiLight/MiLightClient.h
+        lib/MiLight/MiLightRemoteConfig.cpp
+        lib/MiLight/MiLightRemoteConfig.h
+        lib/MiLight/PacketFormatter.cpp
+        lib/MiLight/PacketFormatter.h
+        lib/MiLight/PacketQueue.cpp
+        lib/MiLight/PacketQueue.h
+        lib/MiLight/PacketSender.cpp
+        lib/MiLight/PacketSender.h
+        lib/MiLight/RadioSwitchboard.cpp
+        lib/MiLight/RadioSwitchboard.h
+        lib/MiLight/RgbCctPacketFormatter.cpp
+        lib/MiLight/RgbCctPacketFormatter.h
+        lib/MiLight/RgbPacketFormatter.cpp
+        lib/MiLight/RgbPacketFormatter.h
+        lib/MiLight/RgbwPacketFormatter.cpp
+        lib/MiLight/RgbwPacketFormatter.h
+        lib/MiLight/V2PacketFormatter.cpp
+        lib/MiLight/V2PacketFormatter.h
+        lib/MiLight/V2RFEncoding.cpp
+        lib/MiLight/V2RFEncoding.h
+        lib/MiLightState/GroupState.cpp
+        lib/MiLightState/GroupState.h
+        lib/MiLightState/GroupStateCache.cpp
+        lib/MiLightState/GroupStateCache.h
+        lib/MiLightState/GroupStatePersistence.cpp
+        lib/MiLightState/GroupStatePersistence.h
+        lib/MiLightState/GroupStateStore.cpp
+        lib/MiLightState/GroupStateStore.h
+        lib/Radio/LT8900MiLightRadio.cpp
+        lib/Radio/LT8900MiLightRadio.h
+        lib/Radio/MiLightRadio.h
+        lib/Radio/MiLightRadioConfig.cpp
+        lib/Radio/MiLightRadioConfig.h
+        lib/Radio/MiLightRadioFactory.cpp
+        lib/Radio/MiLightRadioFactory.h
+        lib/Radio/NRF24MiLightRadio.cpp
+        lib/Radio/NRF24MiLightRadio.h
+        lib/Radio/PL1167_nRF24.cpp
+        lib/Radio/PL1167_nRF24.h
+        lib/Radio/RadioUtils.cpp
+        lib/Radio/RadioUtils.h
+        lib/Settings/AboutHelper.cpp
+        lib/Settings/AboutHelper.h
+        lib/Settings/Settings.cpp
+        lib/Settings/Settings.h
+        lib/Settings/StringStream.h
+        lib/SSDP/New_ESP8266SSDP.cpp
+        lib/SSDP/New_ESP8266SSDP.h
+        lib/Transitions/ChangeFieldOnFinishTransition.cpp
+        lib/Transitions/ChangeFieldOnFinishTransition.h
+        lib/Transitions/ColorTransition.cpp
+        lib/Transitions/ColorTransition.h
+        lib/Transitions/FieldTransition.cpp
+        lib/Transitions/FieldTransition.h
+        lib/Transitions/Transition.cpp
+        lib/Transitions/Transition.h
+        lib/Transitions/TransitionController.cpp
+        lib/Transitions/TransitionController.h
+        lib/Types/BulbId.cpp
+        lib/Types/BulbId.h
+        lib/Types/GroupStateField.cpp
+        lib/Types/GroupStateField.h
+        lib/Types/MiLightCommands.h
+        lib/Types/MiLightRemoteType.cpp
+        lib/Types/MiLightRemoteType.h
+        lib/Types/MiLightStatus.cpp
+        lib/Types/MiLightStatus.h
+        lib/Types/ParsedColor.cpp
+        lib/Types/ParsedColor.h
+        lib/Types/RF24Channel.cpp
+        lib/Types/RF24Channel.h
+        lib/Types/RF24PowerLevel.cpp
+        lib/Types/RF24PowerLevel.h
+        src/main.cpp)
 
-include_directories(
-        lib/DataStructures
-        lib/Helpers
-        lib/LEDStatus
-        lib/MiLight
-        lib/MiLightState
-        lib/MQTT
-        lib/Radio
-        lib/Settings
-        lib/SSDP
-        lib/Transitions
-        lib/Types
-        lib/Udp
-        lib/WebServer
-        includes/single_json
-        includes/CircularBuffer
-        #includes/PiDuino_Library
-        #includes/PiDuino_Library/Arduinoh
-        includes/WiringPi/wiringPi
-        includes/RF24
-        #includes/rich_http_server/src
-        #includes/path_variable_handlers/src
-        #includes/arduinoWebSockets/src
-)
-
-
-add_custom_target(
-        RF24
-        COMMAND export C_INCLUDE_PATH=${CMAKE_SOURCE_DIR}/includes/WiringPi/wiringPi; make
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/includes/RF24"
-)
-#add_executable(myexecutable myexcutable.c)
 target_link_libraries(milight_hub PUBLIC rf24)
-add_dependencies(milight_hub RF24)
