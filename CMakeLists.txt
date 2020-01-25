@@ -67,8 +67,8 @@ add_executable(milight_hub
         lib/MiLightState/GroupStatePersistence.h
         lib/MiLightState/GroupStateStore.cpp
         lib/MiLightState/GroupStateStore.h
-        lib/Radio/LT8900MiLightRadio.cpp
-        lib/Radio/LT8900MiLightRadio.h
+        #lib/Radio/LT8900MiLightRadio.cpp
+        #lib/Radio/LT8900MiLightRadio.h
         lib/Radio/MiLightRadio.h
         lib/Radio/MiLightRadioConfig.cpp
         lib/Radio/MiLightRadioConfig.h
@@ -80,8 +80,8 @@ add_executable(milight_hub
         lib/Radio/PL1167_nRF24.h
         lib/Radio/RadioUtils.cpp
         lib/Radio/RadioUtils.h
-        lib/Settings/AboutHelper.cpp
-        lib/Settings/AboutHelper.h
+        #lib/Settings/AboutHelper.cpp
+        #lib/Settings/AboutHelper.h
         lib/Settings/Settings.cpp
         lib/Settings/Settings.h
         lib/Settings/StringStream.h

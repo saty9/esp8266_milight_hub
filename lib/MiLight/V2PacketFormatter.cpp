@@ -61,9 +61,9 @@ void V2PacketFormatter::finalizePacket(uint8_t* packet) {
 }
 
 void V2PacketFormatter::format(uint8_t const* packet, char* buffer) {
-  buffer += sprintf_P(buffer, PSTR("Raw packet: "));
+  buffer += sprintf(buffer, PSTR("Raw packet: "));
   for (size_t i = 0; i < packetLength; i++) {
-    buffer += sprintf_P(buffer, PSTR("%02X "), packet[i]);
+    buffer += sprintf(buffer, PSTR("%02X "), packet[i]);
   }
 
   uint8_t decodedPacket[packetLength];
@@ -71,15 +71,15 @@ void V2PacketFormatter::format(uint8_t const* packet, char* buffer) {
 
   V2RFEncoding::decodeV2Packet(decodedPacket);
 
-  buffer += sprintf_P(buffer, PSTR("\n\nDecoded:\n"));
-  buffer += sprintf_P(buffer, PSTR("Key      : %02X\n"), decodedPacket[0]);
-  buffer += sprintf_P(buffer, PSTR("b1       : %02X\n"), decodedPacket[1]);
-  buffer += sprintf_P(buffer, PSTR("ID       : %02X%02X\n"), decodedPacket[2], decodedPacket[3]);
-  buffer += sprintf_P(buffer, PSTR("Command  : %02X\n"), decodedPacket[4]);
-  buffer += sprintf_P(buffer, PSTR("Argument : %02X\n"), decodedPacket[5]);
-  buffer += sprintf_P(buffer, PSTR("Sequence : %02X\n"), decodedPacket[6]);
-  buffer += sprintf_P(buffer, PSTR("Group    : %02X\n"), decodedPacket[7]);
-  buffer += sprintf_P(buffer, PSTR("Checksum : %02X"), decodedPacket[8]);
+  buffer += sprintf(buffer, PSTR("\n\nDecoded:\n"));
+  buffer += sprintf(buffer, PSTR("Key      : %02X\n"), decodedPacket[0]);
+  buffer += sprintf(buffer, PSTR("b1       : %02X\n"), decodedPacket[1]);
+  buffer += sprintf(buffer, PSTR("ID       : %02X%02X\n"), decodedPacket[2], decodedPacket[3]);
+  buffer += sprintf(buffer, PSTR("Command  : %02X\n"), decodedPacket[4]);
+  buffer += sprintf(buffer, PSTR("Argument : %02X\n"), decodedPacket[5]);
+  buffer += sprintf(buffer, PSTR("Sequence : %02X\n"), decodedPacket[6]);
+  buffer += sprintf(buffer, PSTR("Group    : %02X\n"), decodedPacket[7]);
+  buffer += sprintf(buffer, PSTR("Checksum : %02X"), decodedPacket[8]);
 }
 
 uint8_t V2PacketFormatter::groupCommandArg(MiLightStatus status, uint8_t groupId) {
@@ -103,7 +103,7 @@ void V2PacketFormatter::switchMode(const GroupState& currentState, BulbMode desi
       updateColorWhite();
       break;
     default:
-      Serial.printf_P(PSTR("V2PacketFormatter::switchMode: Request to switch to unknown mode %d\n"), desiredMode);
+      printf("V2PacketFormatter::switchMode: Request to switch to unknown mode %d\n", desiredMode);
       break;
   }
 

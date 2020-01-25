@@ -283,7 +283,7 @@ void MiLightClient::updateColor(JsonVariant json) {
   ParsedColor color = ParsedColor::fromJson(json);
 
   if (!color.success) {
-    Serial.println(F("Error parsing color field, unrecognized format"));
+    printf("Error parsing color field, unrecognized format\n");
     return;
   }
 

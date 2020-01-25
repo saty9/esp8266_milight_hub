@@ -13,6 +13,7 @@
 #include "PL1167_nRF24.h"
 #include <RadioUtils.h>
 #include <MiLightRadioConfig.h>
+#include <thread>
 
 static uint16_t calc_crc(uint8_t *data, size_t data_length);
 
@@ -132,7 +133,7 @@ int PL1167_nRF24::transmit(uint8_t channel) {
     if (retval < 0) {
       return retval;
     }
-    yield();
+      std::this_thread::yield();
   }
 
   _radio.stopListening();
@@ -152,7 +153,7 @@ int PL1167_nRF24::transmit(uint8_t channel) {
     }
   }
 
-  yield();
+    std::this_thread::yield();
 
   _radio.write(tmp, outp);
   return 0;

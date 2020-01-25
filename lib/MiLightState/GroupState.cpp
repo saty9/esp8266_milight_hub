@@ -1,7 +1,7 @@
 #include <GroupState.h>
 #include <Units.h>
 #include <MiLightRemoteConfig.h>
-#include <RGBConverter.h>
+//#include <RGBConverter.h>
 #include <BulbId.h>
 #include <MiLightCommands.h>
 
@@ -203,7 +203,7 @@ bool GroupState::clearField(GroupStateField field) {
       break;
 
     default:
-      Serial.printf_P(PSTR("Attempted to clear unknown field: %d\n"), static_cast<uint8_t>(field));
+      printf("Attempted to clear unknown field: %d\n", static_cast<uint8_t>(field));
       break;
   }
 
@@ -243,8 +243,7 @@ bool GroupState::isSetField(GroupStateField field) const {
     case GroupStateField::BULB_MODE:
       return isSetBulbMode();
     default:
-      Serial.print(F("WARNING: tried to check if unknown field was set: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to check if unknown field was set: %i\n", static_cast<unsigned int>(field));
       break;
   }
 
@@ -258,8 +257,7 @@ bool GroupState::isSetScratchField(GroupStateField field) const {
     case GroupStateField::KELVIN:
       return scratchpad.fields._isSetKelvinScratch;
     default:
-      Serial.print(F("WARNING: tried to check if unknown scratch field was set: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to check if unknown scratch field was set: %i\n", static_cast<unsigned int>(field));
       break;
   }
 
@@ -284,8 +282,7 @@ uint16_t GroupState::getFieldValue(GroupStateField field) const {
     case GroupStateField::BULB_MODE:
       return getBulbMode();
     default:
-      Serial.print(F("WARNING: tried to fetch value for unknown field: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to fetch value for unknown field: %i\n",static_cast<unsigned int>(field));
       break;
   }
 
@@ -312,8 +309,7 @@ uint16_t GroupState::getScratchFieldValue(GroupStateField field) const {
     case GroupStateField::KELVIN:
       return scratchpad.fields._kelvinScratch;
     default:
-      Serial.print(F("WARNING: tried to fetch value for unknown scratch field: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to fetch value for unknown scratch field: %i\n", static_cast<unsigned int>(field));
       break;
   }
 
@@ -345,8 +341,7 @@ void GroupState::setFieldValue(GroupStateField field, uint16_t value) {
       setBulbMode(static_cast<BulbMode>(value));
       break;
     default:
-      Serial.print(F("WARNING: tried to set value for unknown field: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to set value for unknown field: %i\n", static_cast<unsigned int>(field));
       break;
   }
 }
@@ -362,8 +357,7 @@ void GroupState::setScratchFieldValue(GroupStateField field, uint16_t value) {
       scratchpad.fields._kelvinScratch = value;
       break;
     default:
-      Serial.print(F("WARNING: tried to set value for unknown scratch field: "));
-      Serial.println(static_cast<unsigned int>(field));
+      printf("WARNING: tried to set value for unknown scratch field: %i\n",static_cast<unsigned int>(field));
       break;
   }
 }
@@ -611,7 +605,7 @@ bool GroupState::clearMqttDirty() {
 
 void GroupState::load(std::ifstream &stream) {
   for (size_t i = 0; i < DATA_LONGS; i++) {
-    stream.readBytes(reinterpret_cast<uint8_t*>(&state.rawData[i]), 4);
+    stream.read(reinterpret_cast<char *>((&state.rawData[i])), 4);
   }
   clearDirty();
 }

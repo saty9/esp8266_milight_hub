@@ -1,5 +1,6 @@
 #include <PacketSender.h>
 #include <MiLightRadioConfig.h>
+#include <cmath>
 
 PacketSender::PacketSender(
   RadioSwitchboard& radioSwitchboard,
@@ -13,7 +14,7 @@ PacketSender::PacketSender(
   , lastSend(0)
   , currentResendCount(settings.packetRepeats)
   , throttleMultiplier(
-      std::ceil(
+                (int) std::ceil(
         (settings.packetRepeatThrottleSensitivity / 1000.0) * settings.packetRepeats
       )
     )

@@ -1,14 +1,15 @@
 #include <AboutHelper.h>
 #include <ArduinoJson.h>
 #include <Settings.h>
-#include <ESP8266WiFi.h>
+//#include <ESP8266WiFi.h>
+#include "string"
 
-String AboutHelper::generateAboutString(bool abbreviated) {
+std::string AboutHelper::generateAboutString(bool abbreviated) {
   DynamicJsonDocument buffer(1024);
 
   generateAboutObject(buffer, abbreviated);
 
-  String body;
+  std::string body;
   serializeJson(buffer, body);
 
   return body;

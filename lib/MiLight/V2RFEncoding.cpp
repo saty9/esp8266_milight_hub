@@ -1,4 +1,5 @@
 #include <V2RFEncoding.h>
+#include <cstddef>
 
 #define V2_OFFSET(byte, key, jumpStart) ( \
   V2_OFFSETS[byte-1][key%4] \

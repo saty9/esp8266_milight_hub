@@ -3,6 +3,7 @@
 #include <IntParsing.h>
 #include <algorithm>
 #include <JsonHelpers.h>
+#include "fstream"
 
 #define PORT_POSITION(s) ( s.indexOf(':') )
 
@@ -64,7 +65,7 @@ void Settings::updateGatewayConfigs(JsonArray arr) {
 
 void Settings::patch(JsonObject parsedSettings) {
   if (parsedSettings.isNull()) {
-    Serial.println(F("Skipping patching loaded settings.  Parsed settings was null."));
+    printf("Skipping patching loaded settings.  Parsed settings was null.\n");
     return;
   }
 
@@ -119,6 +120,7 @@ void Settings::patch(JsonObject parsedSettings) {
     this->rf24PowerLevel = RF24PowerLevelHelpers::valueFromName(parsedSettings["rf24_power_level"]);
   }
 
+  /*
   if (parsedSettings.containsKey("led_mode_wifi_config")) {
     this->ledModeWifiConfig = LEDStatus::stringToLEDMode(parsedSettings["led_mode_wifi_config"]);
   }
@@ -134,6 +136,7 @@ void Settings::patch(JsonObject parsedSettings) {
   if (parsedSettings.containsKey("led_mode_packet")) {
     this->ledModePacket = LEDStatus::stringToLEDMode(parsedSettings["led_mode_packet"]);
   }
+   */
 
   if (parsedSettings.containsKey("radio_interface_type")) {
     this->radioInterfaceType = Settings::typeFromString(parsedSettings["radio_interface_type"]);
@@ -220,8 +223,7 @@ void Settings::load(Settings& settings) {
       JsonObject parsedSettings = json.as<JsonObject>();
       settings.patch(parsedSettings);
     } else {
-      Serial.print(F("Error parsing saved settings file: "));
-      Serial.println(error.c_str());
+      printf("Error parsing saved settings file: %s\n", error.c_str());
     }
   } else {
     settings.save();
@@ -275,10 +277,12 @@ void Settings::serialize(std::ifstream &stream, const bool prettyPrint) {
   root["packet_repeat_throttle_threshold"] = this->packetRepeatThrottleThreshold;
   root["packet_repeat_minimum"] = this->packetRepeatMinimum;
   root["enable_automatic_mode_switching"] = this->enableAutomaticModeSwitching;
+  /*
   root["led_mode_wifi_config"] = LEDStatus::LEDModeToString(this->ledModeWifiConfig);
   root["led_mode_wifi_failed"] = LEDStatus::LEDModeToString(this->ledModeWifiFailed);
   root["led_mode_operating"] = LEDStatus::LEDModeToString(this->ledModeOperating);
   root["led_mode_packet"] = LEDStatus::LEDModeToString(this->ledModePacket);
+  */
   root["led_mode_packet_count"] = this->ledModePacketCount;
   root["hostname"] = this->hostname;
   root["rf24_power_level"] = RF24PowerLevelHelpers::nameFromValue(this->rf24PowerLevel);
