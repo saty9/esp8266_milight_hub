@@ -19,7 +19,7 @@ void GroupStatePersistence::set(const BulbId &id, const GroupState& state) {
   memset(path, 0, 30);
   buildFilename(id, path);
 
-  std::ifstream f(path, std::ios_base::out);
+  std::fstream f(path, std::ios_base::out);
   state.dump(f);
   f.close();
 }

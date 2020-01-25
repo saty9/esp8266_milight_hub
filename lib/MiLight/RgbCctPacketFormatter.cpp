@@ -149,7 +149,9 @@ BulbId RgbCctPacketFormatter::parsePacket(const uint8_t *packet, JsonObject resu
     if (level > 100) { level = 100;} else if (level < 0) {level=0;}
     result[GroupStateFieldNames::BRIGHTNESS] = Units::rescale<uint8_t, uint8_t>(level, 255, 100);
   } else if (command == RGB_CCT_SATURATION) {
-    result[GroupStateFieldNames::SATURATION] = constrain(arg - RGB_CCT_SATURATION_OFFSET, 0, 100);
+      uint8_t level = arg - RGB_CCT_SATURATION_OFFSET;
+      if (level > 100) { level = 100;} else if (level < 0) {level=0;}
+    result[GroupStateFieldNames::SATURATION] = level;
   } else if (command == RGB_CCT_MODE) {
     result[GroupStateFieldNames::MODE] = arg;
   } else {

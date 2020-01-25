@@ -8,7 +8,7 @@ FieldTransition::Builder::Builder(size_t id, uint16_t defaultPeriod, const BulbI
       defaultPeriod,
       bulbId,
       callback,
-      max(
+      std::max(
         static_cast<size_t>(1),
         static_cast<size_t>(std::abs(static_cast<int16_t>(end) - static_cast<uint16_t>(start)))
       )
@@ -77,9 +77,9 @@ bool FieldTransition::isFinished() {
 }
 
 void FieldTransition::childSerialize(JsonObject& json) {
-  json[F("type")] = F("field");
-  json[F("field")] = GroupStateFieldHelpers::getFieldName(field);
-  json[F("current_value")] = currentValue;
-  json[F("end_value")] = endValue;
-  json[F("step_size")] = stepSize;
+  json["type"] = "field";
+  json["field"] = GroupStateFieldHelpers::getFieldName(field);
+  json["current_value"] = currentValue;
+  json["end_value"] = endValue;
+  json["step_size"] = stepSize;
 }

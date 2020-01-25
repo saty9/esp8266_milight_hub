@@ -5,7 +5,7 @@
 #include <JsonHelpers.h>
 #include "fstream"
 
-#define PORT_POSITION(s) ( s.indexOf(':') )
+#define PORT_POSITION(s) ( s.find(':') )
 
 GatewayConfig::GatewayConfig(uint16_t deviceId, uint16_t port, uint8_t protocolVersion)
   : deviceId(deviceId)
@@ -327,7 +327,7 @@ std::string Settings::mqttServer() {
   if (pos == -1) {
     return _mqttServer;
   } else {
-    return _mqttServer.substring(0, pos);
+    return _mqttServer.substr(0, pos);
   }
 }
 
@@ -342,11 +342,11 @@ uint16_t Settings::mqttPort() {
 }
 
 RadioInterfaceType Settings::typeFromString(const std::string& s) {
-  if (s.equalsIgnoreCase("lt8900")) {
-    return LT8900;
-  } else {
+  //if (s.equalsIgnoreCase("lt8900")) {
+  //  return LT8900;
+  //} else {
     return nRF24;
-  }
+  //}
 }
 
 std::string Settings::typeToString(RadioInterfaceType type) {
@@ -361,6 +361,7 @@ std::string Settings::typeToString(RadioInterfaceType type) {
 }
 
 WifiMode Settings::wifiModeFromString(const std::string& mode) {
+    /*
   if (mode.equalsIgnoreCase("b")) {
     return WifiMode::B;
   } else if (mode.equalsIgnoreCase("g")) {
@@ -368,6 +369,8 @@ WifiMode Settings::wifiModeFromString(const std::string& mode) {
   } else {
     return WifiMode::N;
   }
+     */
+    return  WifiMode::B;
 }
 
 std::string Settings::wifiModeToString(WifiMode mode) {

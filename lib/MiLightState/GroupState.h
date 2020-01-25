@@ -151,7 +151,7 @@ public:
   ParsedColor getColor() const;
 
   void load(std::ifstream &stream);
-  void dump(std::ifstream &stream) const;
+  void dump(std::fstream &stream) const;
 
   void debugState(char const *debugMessage) const;
 

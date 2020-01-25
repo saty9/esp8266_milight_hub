@@ -12,7 +12,7 @@ include_directories(lib/MiLight)
 include_directories(lib/MiLightState)
 include_directories(lib/Radio)
 include_directories(lib/Settings)
-include_directories(lib/SSDP)
+#include_directories(lib/SSDP)
 include_directories(lib/Transitions)
 include_directories(lib/Types)
 include_directories(includes/RF24)
@@ -85,8 +85,8 @@ add_executable(milight_hub
         lib/Settings/Settings.cpp
         lib/Settings/Settings.h
         lib/Settings/StringStream.h
-        lib/SSDP/New_ESP8266SSDP.cpp
-        lib/SSDP/New_ESP8266SSDP.h
+        #lib/SSDP/New_ESP8266SSDP.cpp
+        #lib/SSDP/New_ESP8266SSDP.h
         lib/Transitions/ChangeFieldOnFinishTransition.cpp
         lib/Transitions/ChangeFieldOnFinishTransition.h
         lib/Transitions/ColorTransition.cpp

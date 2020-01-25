@@ -1,5 +1,5 @@
 #include <Transition.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <cmath>
 
 Transition::Builder::Builder(size_t id, uint16_t defaultPeriod, const BulbId& bulbId, TransitionFn callback, size_t maxSteps)
@@ -79,7 +79,7 @@ size_t Transition::Builder::getOrComputePeriod() const {
     return period;
   } else if (duration > 0 && numPeriods > 0) {
     size_t computed = floor(duration / static_cast<float>(numPeriods));
-    return max(MIN_PERIOD, computed);
+    return std::max(MIN_PERIOD, computed);
   } else {
     return 0;
   }
@@ -100,7 +100,7 @@ size_t Transition::Builder::getOrComputeNumPeriods() const {
     return numPeriods;
   } else if (period > 0 && duration > 0) {
     size_t _numPeriods = ceil(duration / static_cast<float>(period));
-    return max(static_cast<size_t>(1), _numPeriods);
+    return std::max(static_cast<size_t>(1), _numPeriods);
   } else {
     return 0;
   }
@@ -168,9 +168,9 @@ void Transition::stepValue(int16_t& current, int16_t end, int16_t stepSize) {
 }
 
 void Transition::serialize(JsonObject& json) {
-  json[F("id")] = id;
-  json[F("period")] = period;
-  json[F("last_sent")] = lastSent;
+  json["id"] = id;
+  json["period"] = period;
+  json["last_sent"] = lastSent;
 
   JsonObject bulbParams = json.createNestedObject("bulb");
   bulbId.serialize(bulbParams);

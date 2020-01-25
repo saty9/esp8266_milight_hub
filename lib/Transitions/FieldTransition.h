@@ -1,7 +1,7 @@
 #include <GroupStateField.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <functional>
 #include <Transition.h>
 

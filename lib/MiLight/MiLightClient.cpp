@@ -315,7 +315,7 @@ void MiLightClient::update(JsonObject request) {
     } else if (jsonTransition.is<size_t>()) {
       transition = jsonTransition.as<size_t>();
     } else {
-      Serial.println(F("MiLightClient - WARN: unsupported transition type.  Must be float or int."));
+      printf("MiLightClient - WARN: unsupported transition type.  Must be float or int.\n");
     }
   }
 
@@ -453,12 +453,12 @@ void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, f
   std::shared_ptr<Transition::Builder> transitionBuilder = nullptr;
 
   if (currentState == nullptr) {
-    Serial.println(F("Error planning transition: could not find current bulb state."));
+    printf("Error planning transition: could not find current bulb state.\n");
     return;
   }
 
   if (!currentState->isSetField(field)) {
-    Serial.println(F("Error planning transition: current state for field could not be determined"));
+    printf("Error planning transition: current state for field could not be determined\n");
     return;
   }
 
@@ -501,7 +501,7 @@ void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, f
   }
 
   if (transitionBuilder == nullptr) {
-    Serial.printf_P(PSTR("Unsupported transition field: %s\n"), GroupStateFieldHelpers::getFieldName(field));
+    printf("Unsupported transition field: %s\n", GroupStateFieldHelpers::getFieldName(field));
     return;
   }
 

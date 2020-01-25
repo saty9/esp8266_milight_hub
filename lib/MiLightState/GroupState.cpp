@@ -610,16 +610,15 @@ void GroupState::load(std::ifstream &stream) {
   clearDirty();
 }
 
-void GroupState::dump(ifstream &stream) const {
+void GroupState::dump(fstream &stream) const {
   for (size_t i = 0; i < DATA_LONGS; i++) {
-    stream.write(reinterpret_cast<const uint8_t*>(&state.rawData[i]), 4);
+    stream.write(reinterpret_cast<const char *>(&state.rawData[i]), 4);
   }
 }
 
 bool GroupState::applyIncrementCommand(GroupStateField field, IncrementDirection dir) {
   if (field != GroupStateField::KELVIN && field != GroupStateField::BRIGHTNESS) {
-    Serial.print(F("WARNING: tried to apply increment for unsupported field: "));
-    Serial.println(static_cast<uint8_t>(field));
+    printf("WARNING: tried to apply increment for unsupported field: %i\n",static_cast<uint8_t>(field));
     return false;
   }
 
@@ -635,7 +634,9 @@ bool GroupState::applyIncrementCommand(GroupStateField field, IncrementDirection
 #endif
 
     // For now, assume range for both brightness and kelvin is [0, 100]
-    setFieldValue(field, constrain(newValue, 0, 100));
+    uint8_t level = newValue;
+    if (level > 100) { level = 100;} else if (level < 0) {level=0;}
+    setFieldValue(field, level);
 
     return true;
   // Otherwise start or update scratch state
@@ -769,7 +770,7 @@ bool GroupState::patch(JsonObject state) {
   }
 
   if (state.containsKey(GroupStateFieldNames::COMMAND)) {
-    const String& command = state[GroupStateFieldNames::COMMAND];
+    const std::string& command = state[GroupStateFieldNames::COMMAND];
 
     if (isOn() && command == MiLightCommandNames::SET_WHITE) {
       changes |= setBulbMode(BULB_MODE_WHITE);
@@ -933,7 +934,7 @@ void GroupState::applyField(JsonObject partialState, const BulbId& bulbId, Group
         break;
 
       default:
-        Serial.printf_P(PSTR("Tried to apply unknown field: %d\n"), static_cast<uint8_t>(field));
+        printf("Tried to apply unknown field: %d\n", static_cast<uint8_t>(field));
         break;
     }
   }

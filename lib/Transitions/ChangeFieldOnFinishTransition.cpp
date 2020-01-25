@@ -51,10 +51,10 @@ void ChangeFieldOnFinishTransition::step() {
 }
 
 void ChangeFieldOnFinishTransition::childSerialize(JsonObject& json) {
-  json[F("type")] = F("change_on_finish");
-  json[F("field")] = GroupStateFieldHelpers::getFieldName(field);
-  json[F("value")] = arg;
+  json["type"] = "change_on_finish";
+  json["field"] = GroupStateFieldHelpers::getFieldName(field);
+  json["value"] = arg;
 
-  JsonObject child = json.createNestedObject(F("child"));
+  JsonObject child = json.createNestedObject("child");
   delegate->childSerialize(child);
 }

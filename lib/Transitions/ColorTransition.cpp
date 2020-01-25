@@ -1,5 +1,6 @@
 #include <ColorTransition.h>
-#include <Arduino.h>
+#include <cmath>
+//#include <Arduino.h>
 
 ColorTransition::Builder::Builder(size_t id, uint16_t defaultPeriod, const BulbId& bulbId, TransitionFn callback, const ParsedColor& start, const ParsedColor& end)
   : Transition::Builder(id, defaultPeriod, bulbId, callback, calculateMaxDistance(start, end))
@@ -137,19 +138,19 @@ bool ColorTransition::isFinished() {
 }
 
 void ColorTransition::childSerialize(JsonObject& json) {
-  json[F("type")] = F("color");
+  json["type"] = "color";
 
-  JsonArray currentColorArr = json.createNestedArray(F("current_color"));
+  JsonArray currentColorArr = json.createNestedArray("current_color");
   currentColorArr.add(currentColor.r);
   currentColorArr.add(currentColor.g);
   currentColorArr.add(currentColor.b);
 
-  JsonArray endColorArr = json.createNestedArray(F("end_color"));
+  JsonArray endColorArr = json.createNestedArray("end_color");
   endColorArr.add(endColor.r);
   endColorArr.add(endColor.g);
   endColorArr.add(endColor.b);
 
-  JsonArray stepSizesArr = json.createNestedArray(F("step_sizes"));
+  JsonArray stepSizesArr = json.createNestedArray("step_sizes");
   stepSizesArr.add(stepSizes.r);
   stepSizesArr.add(stepSizes.g);
   stepSizesArr.add(stepSizes.b);
