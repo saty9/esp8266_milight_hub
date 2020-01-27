@@ -512,7 +512,7 @@ void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, f
 bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj) {
   if (! args.containsKey(FS(TransitionParams::FIELD))
     || ! args.containsKey(FS(TransitionParams::END_VALUE))) {
-    responseObj[F("error")] = F("Ignoring transition missing required arguments");
+    responseObj["error"] = "Ignoring transition missing required arguments";
     return false;
   }
 
@@ -525,8 +525,8 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
 
   if (field == GroupStateField::UNKNOWN) {
     char errorMsg[30];
-    sprintf_P(errorMsg, PSTR("Unknown transition field: %s\n"), fieldName);
-    responseObj[F("error")] = errorMsg;
+    sprintf(errorMsg, "Unknown transition field: %s\n", fieldName);
+    responseObj["error"] = errorMsg;
     return false;
   }
 
@@ -561,11 +561,11 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
     ParsedColor endColor = ParsedColor::fromJson(endValue);
 
     if (! _startValue.success) {
-      responseObj[F("error")] = F("Transition - error parsing start color");
+      responseObj["error"] = "Transition - error parsing start color";
       return false;
     }
     if (! endColor.success) {
-      responseObj[F("error")] = F("Transition - error parsing end color");
+      responseObj["error"] = "Transition - error parsing end color";
       return false;
     }
 
@@ -593,8 +593,8 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
 
   if (transitionBuilder == nullptr) {
     char errorMsg[30];
-    sprintf_P(errorMsg, PSTR("Recognized, but unsupported transition field: %s\n"), fieldName);
-    responseObj[F("error")] = errorMsg;
+    sprintf(errorMsg,"Recognized, but unsupported transition field: %s\n", fieldName);
+    responseObj["error"] = errorMsg;
     return false;
   }
 

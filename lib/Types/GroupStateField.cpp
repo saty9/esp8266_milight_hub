@@ -1,5 +1,6 @@
 #include <GroupStateField.h>
 #include <Size.h>
+#include <cstring>
 
 static const char* STATE_NAMES[] = {
   GroupStateFieldNames::UNKNOWN,

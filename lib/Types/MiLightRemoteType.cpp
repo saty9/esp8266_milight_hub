@@ -1,5 +1,5 @@
 #include <MiLightRemoteType.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 
 static const char* REMOTE_NAME_RGBW    = "rgbw";
 static const char* REMOTE_NAME_CCT     = "cct";

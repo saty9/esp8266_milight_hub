@@ -1,6 +1,7 @@
 #include <Transition.h>
 //#include <Arduino.h>
 #include <cmath>
+#include "chrono"
 
 Transition::Builder::Builder(size_t id, uint16_t defaultPeriod, const BulbId& bulbId, TransitionFn callback, size_t maxSteps)
   : id(id)
@@ -139,7 +140,7 @@ Transition::Transition(
 { }
 
 void Transition::tick() {
-  unsigned long now = millis();
+  unsigned long now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
   if ((lastSent + period) <= now
     && ((!isFinished() || lastSent == 0))) { // always send at least once
