@@ -510,16 +510,16 @@ void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, f
 }
 
 bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj) {
-  if (! args.containsKey(FS(TransitionParams::FIELD))
-    || ! args.containsKey(FS(TransitionParams::END_VALUE))) {
+  if (! args.containsKey(TransitionParams::FIELD)
+    || ! args.containsKey(TransitionParams::END_VALUE)) {
     responseObj["error"] = "Ignoring transition missing required arguments";
     return false;
   }
 
   const BulbId& bulbId = currentRemote->packetFormatter->currentBulbId();
-  const char* fieldName = args[FS(TransitionParams::FIELD)];
-  JsonVariant startValue = args[FS(TransitionParams::START_VALUE)];
-  JsonVariant endValue = args[FS(TransitionParams::END_VALUE)];
+  const char* fieldName = args[TransitionParams::FIELD];
+  JsonVariant startValue = args[TransitionParams::START_VALUE];
+  JsonVariant endValue = args[TransitionParams::END_VALUE];
   GroupStateField field = GroupStateFieldHelpers::getFieldByName(fieldName);
   std::shared_ptr<Transition::Builder> transitionBuilder = nullptr;
 
@@ -592,17 +592,17 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
   }
 
   if (transitionBuilder == nullptr) {
-    char errorMsg[30];
+    char errorMsg[80];
     sprintf(errorMsg,"Recognized, but unsupported transition field: %s\n", fieldName);
     responseObj["error"] = errorMsg;
     return false;
   }
 
-  if (args.containsKey(FS(TransitionParams::DURATION))) {
-    transitionBuilder->setDuration(args[FS(TransitionParams::DURATION)]);
+  if (args.containsKey(TransitionParams::DURATION)) {
+    transitionBuilder->setDuration(args[TransitionParams::DURATION]);
   }
-  if (args.containsKey(FS(TransitionParams::PERIOD))) {
-    transitionBuilder->setPeriod(args[FS(TransitionParams::PERIOD)]);
+  if (args.containsKey(TransitionParams::PERIOD)) {
+    transitionBuilder->setPeriod(args[TransitionParams::PERIOD]);
   }
 
   transitions.addTransition(transitionBuilder->build());
@@ -622,10 +622,10 @@ void MiLightClient::handleEffect(const std::string& effect) {
 JsonVariant MiLightClient::extractStatus(JsonObject object) {
   JsonVariant status;
 
-  if (object.containsKey(FS(GroupStateFieldNames::STATUS))) {
-    return object[FS(GroupStateFieldNames::STATUS)];
+  if (object.containsKey(GroupStateFieldNames::STATUS)) {
+    return object[GroupStateFieldNames::STATUS];
   } else {
-    return object[FS(GroupStateFieldNames::STATE)];
+    return object[GroupStateFieldNames::STATE];
   }
 }
 
