@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ArduinoJson.h>
+#include <json.hpp>
 
 enum MiLightStatus {
   ON = 0,
   OFF = 1
 };
 
-MiLightStatus parseMilightStatus(JsonVariant s);
+MiLightStatus parseMilightStatus(nlohmann::json s);

@@ -1,7 +1,7 @@
 #include <MiLightStatus.h>
 #include <ArduinoJson.h>
 
-MiLightStatus parseMilightStatus(JsonVariant val) {
+MiLightStatus parseMilightStatus(nlohmann::json val) {
   if (val.is<bool>()) {
     return val.as<bool>() ? ON : OFF;
   } else if (val.is<uint16_t>()) {

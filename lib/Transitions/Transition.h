@@ -1,5 +1,5 @@
 #include <BulbId.h>
-#include <ArduinoJson.h>
+#include <json.hpp>
 #include <GroupStateField.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -85,9 +85,9 @@ public:
 
   void tick();
   virtual bool isFinished() = 0;
-  void serialize(JsonObject& doc);
+  void serialize(nlohmann::json& doc);
   virtual void step() = 0;
-  virtual void childSerialize(JsonObject& doc) = 0;
+  virtual void childSerialize(nlohmann::json& doc) = 0;
 
   static size_t calculatePeriod(int16_t distance, size_t stepSize, size_t duration);
 

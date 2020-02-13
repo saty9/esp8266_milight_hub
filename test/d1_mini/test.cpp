@@ -343,7 +343,6 @@ void test_group_0() {
 // setup connects serial, runs test cases (upcoming)
 void setup() {
   delay(2000);
-  SPIFFS.begin();
   Serial.begin(9600);
 
   UNITY_BEGIN();

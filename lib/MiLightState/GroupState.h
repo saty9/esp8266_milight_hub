@@ -4,7 +4,7 @@
 #include <MiLightStatus.h>
 #include <MiLightRadioConfig.h>
 #include <GroupStateField.h>
-#include <ArduinoJson.h>
+#include <json.hpp>
 #include <BulbId.h>
 #include <ParsedColor.h>
 #include <vector>
@@ -38,7 +38,7 @@ public:
 
   // Convenience constructor that patches transient state from a previous GroupState,
   // and defaults with JSON state
-  GroupState(const GroupState* previousState, JsonObject jsonState);
+  GroupState(const GroupState* previousState, nlohmann::json jsonState);
 
   void initFields();
 
@@ -119,14 +119,14 @@ public:
 
   // Patches this state with the fields defined in the JSON state.  Returns
   // true if there were any changes.
-  bool patch(JsonObject state);
+  bool patch(nlohmann::json state);
 
   // It's a little weird to need to pass in a BulbId here.  The purpose is to
   // support fields like DEVICE_ID, which aren't otherweise available to the
   // state in this class.  The alternative is to have every GroupState object
   // keep a reference to its BulbId, which feels too heavy-weight.
-  void applyField(JsonObject state, const BulbId& bulbId, GroupStateField field) const;
-  void applyState(JsonObject state, const BulbId& bulbId, std::vector<GroupStateField>& fields) const;
+  void applyField(nlohmann::json state, const BulbId& bulbId, GroupStateField field) const;
+  void applyState(nlohmann::json state, const BulbId& bulbId, std::vector<GroupStateField>& fields) const;
 
   // Attempt to keep track of increment commands in such a way that we can
   // know what state it's in.  When we get an increment command (like "increase
@@ -214,12 +214,12 @@ private:
   // it here.
   const GroupState* previousState;
 
-  void applyColor(JsonObject state, uint8_t r, uint8_t g, uint8_t b) const;
-  void applyColor(JsonObject state) const;
+  void applyColor(nlohmann::json state, uint8_t r, uint8_t g, uint8_t b) const;
+  void applyColor(nlohmann::json state) const;
   // Apply OpenHAB-style color, e.g., {"color":"0,0,0"}
-  void applyOhColor(JsonObject state) const;
+  void applyOhColor(nlohmann::json state) const;
   // Apply hex color, e.g., {"color":"#FF0000"}
-  void applyHexColor(JsonObject state) const;
+  void applyHexColor(nlohmann::json state) const;
 };
 
 extern const BulbId DEFAULT_BULB_ID;

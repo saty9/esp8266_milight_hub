@@ -79,7 +79,7 @@ public:
   void updateColorWhite();
   void updateColorRaw(const uint8_t color);
   void enableNightMode();
-  void updateColor(JsonVariant json);
+  void updateColor(nlohmann::json json);
 
   // CCT methods
   void updateTemperature(const uint8_t colorTemperature);
@@ -90,11 +90,11 @@ public:
 
   void updateSaturation(const uint8_t saturation);
 
-  void update(JsonObject object);
-  void handleCommand(JsonVariant command);
-  void handleCommands(JsonArray commands);
-  bool handleTransition(JsonObject args, JsonDocument& responseObj);
-  void handleTransition(GroupStateField field, JsonVariant value, float duration, int16_t startValue = FETCH_VALUE_FROM_STATE);
+  void update(nlohmann::json object);
+  void handleCommand(nlohmann::json command);
+  void handleCommands(nlohmann::json commands);
+  bool handleTransition(nlohmann::json args, nlohmann::json & responseObj);
+  void handleTransition(GroupStateField field, nlohmann::json value, float duration, int16_t startValue = FETCH_VALUE_FROM_STATE);
   void handleEffect(const std::string& effect);
 
   void onUpdateBegin(EventHandler handler);
@@ -111,8 +111,8 @@ public:
   // Clear the repeats override so that the default is used
   void clearRepeatsOverride();
 
-  uint8_t parseStatus(JsonVariant object);
-  JsonVariant extractStatus(JsonObject object);
+  uint8_t parseStatus(nlohmann::json object);
+  nlohmann::json extractStatus(nlohmann::json object);
 
 protected:
   struct cmp_str {
@@ -120,7 +120,7 @@ protected:
         return std::strcmp(a, b) < 0;
     }
   };
-  static const std::map<const char*, std::function<void(MiLightClient*, JsonVariant)>, cmp_str> FIELD_SETTERS;
+  static const std::map<const char*, std::function<void(MiLightClient*, nlohmann::json)>, cmp_str> FIELD_SETTERS;
   static const char* FIELD_ORDERINGS[];
 
   RadioSwitchboard& radioSwitchboard;

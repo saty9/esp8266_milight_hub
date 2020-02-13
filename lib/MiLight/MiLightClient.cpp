@@ -31,10 +31,10 @@ const char* MiLightClient::FIELD_ORDERINGS[] = {
   GroupStateFieldNames::COMMANDS
 };
 
-const std::map<const char*, std::function<void(MiLightClient*, JsonVariant)>, MiLightClient::cmp_str> MiLightClient::FIELD_SETTERS = {
+const std::map<const char*, std::function<void(MiLightClient*, nlohmann::json)>, MiLightClient::cmp_str> MiLightClient::FIELD_SETTERS = {
   {
     GroupStateFieldNames::STATUS,
-    [](MiLightClient* client, JsonVariant val) {
+    [](MiLightClient* client, nlohmann::json val) {
       client->updateStatus(parseMilightStatus(val));
     }
   },
@@ -279,11 +279,11 @@ void MiLightClient::toggleStatus() {
   flushPacket();
 }
 
-void MiLightClient::updateColor(JsonVariant json) {
+void MiLightClient::updateColor(nlohmann::json json) {
   ParsedColor color = ParsedColor::fromJson(json);
 
   if (!color.success) {
-    Serial.println(F("Error parsing color field, unrecognized format"));
+    printf("Error parsing color field, unrecognized format\n");
     return;
   }
 
@@ -299,17 +299,17 @@ void MiLightClient::updateColor(JsonVariant json) {
   }
 }
 
-void MiLightClient::update(JsonObject request) {
+void MiLightClient::update(nlohmann::json request) {
   if (this->updateBeginHandler) {
     this->updateBeginHandler();
   }
 
-  const JsonVariant status = this->extractStatus(request);
+  const nlohmann::json status = this->extractStatus(request);
   const uint8_t parsedStatus = this->parseStatus(status);
-  const JsonVariant jsonTransition = request[RequestKeys::TRANSITION];
+  const nlohmann::json jsonTransition = request[RequestKeys::TRANSITION];
   float transition = 0;
 
-  if (!jsonTransition.isNull()) {
+  if (!jsonTransition.empty()) {
     if (jsonTransition.is<float>()) {
       transition = jsonTransition.as<float>();
     } else if (jsonTransition.is<size_t>()) {
@@ -319,8 +319,8 @@ void MiLightClient::update(JsonObject request) {
     }
   }
 
-  JsonVariant brightness = request[GroupStateFieldNames::BRIGHTNESS];
-  JsonVariant level = request[GroupStateFieldNames::LEVEL];
+  nlohmann::json brightness = request[GroupStateFieldNames::BRIGHTNESS];
+  nlohmann::json level = request[GroupStateFieldNames::LEVEL];
   const bool isBrightnessDefined = !brightness.isUndefined() || !level.isUndefined();
 
   // Always turn on first
@@ -357,7 +357,7 @@ void MiLightClient::update(JsonObject request) {
   for (const char* fieldName : FIELD_ORDERINGS) {
     if (request.containsKey(fieldName)) {
       auto handler = FIELD_SETTERS.find(fieldName);
-      JsonVariant value = request[fieldName];
+      nlohmann::json value = request[fieldName];
 
       if (handler != FIELD_SETTERS.end()) {
         // No transition -- set field directly
@@ -396,7 +396,7 @@ void MiLightClient::update(JsonObject request) {
   }
 }
 
-void MiLightClient::handleCommands(JsonArray commands) {
+void MiLightClient::handleCommands(nlohmann::json commands) {
   if (! commands.isNull()) {
     for (size_t i = 0; i < commands.size(); i++) {
       this->handleCommand(commands[i]);
@@ -404,12 +404,12 @@ void MiLightClient::handleCommands(JsonArray commands) {
   }
 }
 
-void MiLightClient::handleCommand(JsonVariant command) {
+void MiLightClient::handleCommand(nlohmann::json command) {
   std::string cmdName;
-  JsonObject args;
+  nlohmann::json args;
 
-  if (command.is<JsonObject>()) {
-    JsonObject cmdObj = command.as<JsonObject>();
+  if (command.is<nlohmann::json>()) {
+    nlohmann::json cmdObj = command.as<nlohmann::json>();
     cmdName = cmdObj[GroupStateFieldNames::COMMAND].as<const char*>();
     args = cmdObj["args"];
   } else if (command.is<const char*>()) {
@@ -448,7 +448,7 @@ void MiLightClient::handleCommand(JsonVariant command) {
   }
 }
 
-void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, float duration, int16_t startValue) {
+void MiLightClient::handleTransition(GroupStateField field, nlohmann::json value, float duration, int16_t startValue) {
   BulbId bulbId = currentRemote->packetFormatter->currentBulbId();
   std::shared_ptr<Transition::Builder> transitionBuilder = nullptr;
 
@@ -509,7 +509,7 @@ void MiLightClient::handleTransition(GroupStateField field, JsonVariant value, f
   transitions.addTransition(transitionBuilder->build());
 }
 
-bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj) {
+bool MiLightClient::handleTransition(nlohmann::json args, JsonDocument& responseObj) {
   if (! args.containsKey(FS(TransitionParams::FIELD))
     || ! args.containsKey(FS(TransitionParams::END_VALUE))) {
     responseObj[F("error")] = F("Ignoring transition missing required arguments");
@@ -518,8 +518,8 @@ bool MiLightClient::handleTransition(JsonObject args, JsonDocument& responseObj)
 
   const BulbId& bulbId = currentRemote->packetFormatter->currentBulbId();
   const char* fieldName = args[FS(TransitionParams::FIELD)];
-  JsonVariant startValue = args[FS(TransitionParams::START_VALUE)];
-  JsonVariant endValue = args[FS(TransitionParams::END_VALUE)];
+  nlohmann::json startValue = args[FS(TransitionParams::START_VALUE)];
+  nlohmann::json endValue = args[FS(TransitionParams::END_VALUE)];
   GroupStateField field = GroupStateFieldHelpers::getFieldByName(fieldName);
   std::shared_ptr<Transition::Builder> transitionBuilder = nullptr;
 
@@ -619,8 +619,8 @@ void MiLightClient::handleEffect(const std::string& effect) {
   }
 }
 
-JsonVariant MiLightClient::extractStatus(JsonObject object) {
-  JsonVariant status;
+nlohmann::json MiLightClient::extractStatus(nlohmann::json object) {
+  nlohmann::json status;
 
   if (object.containsKey(FS(GroupStateFieldNames::STATUS))) {
     return object[FS(GroupStateFieldNames::STATUS)];
@@ -629,7 +629,7 @@ JsonVariant MiLightClient::extractStatus(JsonObject object) {
   }
 }
 
-uint8_t MiLightClient::parseStatus(JsonVariant val) {
+uint8_t MiLightClient::parseStatus(nlohmann::json val) {
   if (val.isUndefined()) {
     return STATUS_UNDEFINED;
   }

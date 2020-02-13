@@ -33,5 +33,5 @@ private:
   bool changeSent;
 
   virtual void step() override;
-  virtual void childSerialize(JsonObject& json) override;
+  virtual void childSerialize(nlohmann::json& json) override;
 };

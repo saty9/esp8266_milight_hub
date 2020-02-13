@@ -50,11 +50,11 @@ void ChangeFieldOnFinishTransition::step() {
   }
 }
 
-void ChangeFieldOnFinishTransition::childSerialize(JsonObject& json) {
+void ChangeFieldOnFinishTransition::childSerialize(nlohmann::json& json) {
   json[F("type")] = F("change_on_finish");
   json[F("field")] = GroupStateFieldHelpers::getFieldName(field);
   json[F("value")] = arg;
 
-  JsonObject child = json.createNestedObject(F("child"));
+  nlohmann::json child = json.createNestedObject(F("child"));
   delegate->childSerialize(child);
 }

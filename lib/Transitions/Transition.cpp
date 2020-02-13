@@ -167,12 +167,12 @@ void Transition::stepValue(int16_t& current, int16_t end, int16_t stepSize) {
   }
 }
 
-void Transition::serialize(JsonObject& json) {
+void Transition::serialize(nlohmann::json& json) {
   json[F("id")] = id;
   json[F("period")] = period;
   json[F("last_sent")] = lastSent;
 
-  JsonObject bulbParams = json.createNestedObject("bulb");
+  nlohmann::json bulbParams = json.createNestedObject("bulb");
   bulbId.serialize(bulbParams);
 
   childSerialize(json);

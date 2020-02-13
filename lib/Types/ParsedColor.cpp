@@ -22,11 +22,11 @@ ParsedColor ParsedColor::fromRgb(uint16_t r, uint16_t g, uint16_t b) {
   };
 }
 
-ParsedColor ParsedColor::fromJson(JsonVariant json) {
+ParsedColor ParsedColor::fromJson(nlohmann::json json) {
   uint16_t r, g, b;
 
-  if (json.is<JsonObject>()) {
-    JsonObject color = json.as<JsonObject>();
+  if (json.is<nlohmann::json>()) {
+    nlohmann::json color = json.as<nlohmann::json>();
 
     r = color["r"];
     g = color["g"];

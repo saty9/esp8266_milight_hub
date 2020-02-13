@@ -76,7 +76,7 @@ bool FieldTransition::isFinished() {
   return finished;
 }
 
-void FieldTransition::childSerialize(JsonObject& json) {
+void FieldTransition::childSerialize(nlohmann::json& json) {
   json[F("type")] = F("field");
   json[F("field")] = GroupStateFieldHelpers::getFieldName(field);
   json[F("current_value")] = currentValue;

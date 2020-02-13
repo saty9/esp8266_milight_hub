@@ -45,7 +45,7 @@ void FUT020PacketFormatter::updateStatus(MiLightStatus status, uint8_t groupId) 
   command(static_cast<uint8_t>(FUT020Command::ON_OFF), 0);
 }
 
-BulbId FUT020PacketFormatter::parsePacket(const uint8_t* packet, JsonObject result) {
+BulbId FUT020PacketFormatter::parsePacket(const uint8_t* packet, nlohmann::json result) {
   FUT020Command command = static_cast<FUT020Command>(packet[FUT02xPacketFormatter::FUT02X_COMMAND_INDEX] & 0x0F);
 
   BulbId bulbId(

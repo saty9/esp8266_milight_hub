@@ -115,7 +115,7 @@ GroupState::GroupState(const GroupState& other)
   scratchpad.rawData = other.scratchpad.rawData;
 }
 
-GroupState::GroupState(const GroupState* previousState, JsonObject jsonState)
+GroupState::GroupState(const GroupState* previousState, nlohmann::json jsonState)
   : previousState(previousState)
 {
   initFields();
@@ -737,7 +737,7 @@ void GroupState::patch(const GroupState& other) {
 
   Returns true if the packet changes affects a state change
 */
-bool GroupState::patch(JsonObject state) {
+bool GroupState::patch(nlohmann::json state) {
   bool changes = false;
 
 #ifdef STATE_DEBUG
@@ -804,19 +804,19 @@ bool GroupState::patch(JsonObject state) {
   return changes;
 }
 
-void GroupState::applyColor(JsonObject state) const {
+void GroupState::applyColor(nlohmann::json state) const {
   ParsedColor color = getColor();
   applyColor(state, color.r, color.g, color.b);
 }
 
-void GroupState::applyColor(JsonObject state, uint8_t r, uint8_t g, uint8_t b) const {
-  JsonObject color = state.createNestedObject(GroupStateFieldNames::COLOR);
+void GroupState::applyColor(nlohmann::json state, uint8_t r, uint8_t g, uint8_t b) const {
+  nlohmann::json color = state.createNestedObject(GroupStateFieldNames::COLOR);
   color["r"] = r;
   color["g"] = g;
   color["b"] = b;
 }
 
-void GroupState::applyOhColor(JsonObject state) const {
+void GroupState::applyOhColor(nlohmann::json state) const {
   ParsedColor color = getColor();
 
   char ohColorStr[13];
@@ -825,7 +825,7 @@ void GroupState::applyOhColor(JsonObject state) const {
   state[GroupStateFieldNames::COLOR] = ohColorStr;
 }
 
-void GroupState::applyHexColor(JsonObject state) const {
+void GroupState::applyHexColor(nlohmann::json state) const {
   ParsedColor color = getColor();
 
   char hexColor[8];
@@ -835,7 +835,7 @@ void GroupState::applyHexColor(JsonObject state) const {
 }
 
 // gather partial state for a single field; see GroupState::applyState to gather many fields
-void GroupState::applyField(JsonObject partialState, const BulbId& bulbId, GroupStateField field) const {
+void GroupState::applyField(nlohmann::json partialState, const BulbId& bulbId, GroupStateField field) const {
   if (isSetField(field)) {
     switch (field) {
       case GroupStateField::STATE:
@@ -950,7 +950,7 @@ void GroupState::debugState(char const *debugMessage) const {
 #ifdef STATE_DEBUG
   // using static to keep large buffers off the call stack
   StaticJsonDocument<500> jsonDoc;
-  JsonObject jsonState = jsonDoc.to<JsonObject>();
+  nlohmann::json jsonState = jsonDoc.to<nlohmann::json>();
 
   // define fields to show (if count changes, make sure to update count to applyState below)
   std::vector<GroupStateField> fields({
@@ -1008,7 +1008,7 @@ ParsedColor GroupState::getColor() const {
 
 // build up a partial state representation based on the specified GrouipStateField array.  Used
 // to gather a subset of states (configurable in the UI) for sending to MQTT and web responses.
-void GroupState::applyState(JsonObject partialState, const BulbId& bulbId, std::vector<GroupStateField>& fields) const {
+void GroupState::applyState(nlohmann::json partialState, const BulbId& bulbId, std::vector<GroupStateField>& fields) const {
   for (std::vector<GroupStateField>::const_iterator itr = fields.begin(); itr != fields.end(); ++itr) {
     applyField(partialState, bulbId, *itr);
   }

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include <ArduinoJson.h>
+#include <json.hpp>
 
 #pragma once
 
@@ -9,5 +9,5 @@ struct ParsedColor {
   uint8_t saturation;
 
   static ParsedColor fromRgb(uint16_t r, uint16_t g, uint16_t b);
-  static ParsedColor fromJson(JsonVariant json);
+  static ParsedColor fromJson(nlohmann::json json);
 };

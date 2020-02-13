@@ -109,7 +109,7 @@ void RgbwPacketFormatter::enableNightMode() {
   command(button | 0x10, 0);
 }
 
-BulbId RgbwPacketFormatter::parsePacket(const uint8_t* packet, JsonObject result) {
+BulbId RgbwPacketFormatter::parsePacket(const uint8_t* packet, nlohmann::json result) {
   uint8_t command = packet[RGBW_COMMAND_INDEX] & 0x7F;
 
   BulbId bulbId(

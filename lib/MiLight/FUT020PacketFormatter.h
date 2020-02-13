@@ -26,5 +26,5 @@ public:
   virtual void increaseBrightness();
   virtual void decreaseBrightness();
 
-  virtual BulbId parsePacket(const uint8_t* packet, JsonObject result) override;
+  virtual BulbId parsePacket(const uint8_t* packet, nlohmann::json result) override;
 };

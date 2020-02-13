@@ -47,13 +47,13 @@ std::string BulbId::getHexDeviceId() const {
   return hexDeviceId;
 }
 
-void BulbId::serialize(JsonObject json) const {
+void BulbId::serialize(nlohmann::json json) const {
   json[GroupStateFieldNames::DEVICE_ID] = deviceId;
   json[GroupStateFieldNames::GROUP_ID] = groupId;
   json[GroupStateFieldNames::DEVICE_TYPE] = MiLightRemoteTypeHelpers::remoteTypeToString(deviceType);
 }
 
-void BulbId::serialize(JsonArray json) const {
+void BulbId::serialize(nlohmann::json json) const {
   json.add(deviceId);
   json.add(MiLightRemoteTypeHelpers::remoteTypeToString(deviceType));
   json.add(groupId);

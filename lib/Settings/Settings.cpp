@@ -36,7 +36,7 @@ size_t Settings::getAutoRestartPeriod() {
   return std::max(_autoRestartPeriod, static_cast<size_t>(MINIMUM_RESTART_PERIOD));
 }
 
-void Settings::updateDeviceIds(JsonArray arr) {
+void Settings::updateDeviceIds(nlohmann::json arr) {
   this->deviceIds.clear();
 
   for (size_t i = 0; i < arr.size(); ++i) {
@@ -44,11 +44,11 @@ void Settings::updateDeviceIds(JsonArray arr) {
   }
 }
 
-void Settings::updateGatewayConfigs(JsonArray arr) {
+void Settings::updateGatewayConfigs(nlohmann::json arr) {
   gatewayConfigs.clear();
 
   for (size_t i = 0; i < arr.size(); i++) {
-    JsonArray params = arr[i];
+    nlohmann::json params = arr[i];
 
     /*
     if (params.size() == 3) {
@@ -62,7 +62,7 @@ void Settings::updateGatewayConfigs(JsonArray arr) {
   }
 }
 
-void Settings::patch(JsonObject parsedSettings) {
+void Settings::patch(nlohmann::json parsedSettings) {
   if (parsedSettings.isNull()) {
     Serial.println(F("Skipping patching loaded settings.  Parsed settings was null."));
     return;
@@ -107,7 +107,7 @@ void Settings::patch(JsonObject parsedSettings) {
   }
 
   if (parsedSettings.containsKey("rf24_channels")) {
-    JsonArray arr = parsedSettings["rf24_channels"];
+    nlohmann::json arr = parsedSettings["rf24_channels"];
     rf24Channels = JsonHelpers::jsonArrToVector<RF24Channel, std::string>(arr, RF24ChannelHelpers::valueFromName);
   }
 
@@ -140,15 +140,15 @@ void Settings::patch(JsonObject parsedSettings) {
   }
 
   if (parsedSettings.containsKey("device_ids")) {
-    JsonArray arr = parsedSettings["device_ids"];
+    nlohmann::json arr = parsedSettings["device_ids"];
     updateDeviceIds(arr);
   }
   if (parsedSettings.containsKey("gateway_configs")) {
-    JsonArray arr = parsedSettings["gateway_configs"];
+    nlohmann::json arr = parsedSettings["gateway_configs"];
     updateGatewayConfigs(arr);
   }
   if (parsedSettings.containsKey("group_state_fields")) {
-    JsonArray arr = parsedSettings["group_state_fields"];
+    nlohmann::json arr = parsedSettings["group_state_fields"];
     groupStateFields = JsonHelpers::jsonArrToVector<GroupStateField, const char*>(arr, GroupStateFieldHelpers::getFieldByName);
   }
 
@@ -169,8 +169,8 @@ std::map<std::string, BulbId>::const_iterator Settings::findAlias(MiLightRemoteT
   return groupIdAliases.end();
 }
 
-void Settings::parseGroupIdAliases(JsonObject json) {
-  JsonObject aliases = json["group_id_aliases"];
+void Settings::parseGroupIdAliases(nlohmann::json json) {
+  nlohmann::json aliases = json["group_id_aliases"];
 
   // Save group IDs that were deleted so that they can be processed by discovery
   // if necessary
@@ -181,7 +181,7 @@ void Settings::parseGroupIdAliases(JsonObject json) {
   groupIdAliases.clear();
 
   for (JsonPair kv : aliases) {
-    JsonArray bulbIdProps = kv.value();
+    nlohmann::json bulbIdProps = kv.value();
     BulbId bulbId = {
       bulbIdProps[1].as<uint16_t>(),
       bulbIdProps[2].as<uint8_t>(),
@@ -194,11 +194,11 @@ void Settings::parseGroupIdAliases(JsonObject json) {
   }
 }
 
-void Settings::dumpGroupIdAliases(JsonObject json) {
-  JsonObject aliases = json.createNestedObject("group_id_aliases");
+void Settings::dumpGroupIdAliases(nlohmann::json json) {
+  nlohmann::json aliases = json.createNestedObject("group_id_aliases");
 
   for (std::map<std::string, BulbId>::iterator itr = groupIdAliases.begin(); itr != groupIdAliases.end(); ++itr) {
-    JsonArray bulbProps = aliases.createNestedArray(itr->first);
+    nlohmann::json bulbProps = aliases.createNestedArray(itr->first);
     BulbId bulbId = itr->second;
     bulbProps.add(MiLightRemoteTypeHelpers::remoteTypeToString(bulbId.deviceType));
     bulbProps.add(bulbId.deviceId);
@@ -217,7 +217,7 @@ void Settings::load(Settings& settings) {
     f.close();
 
     if (! error) {
-      JsonObject parsedSettings = json.as<JsonObject>();
+      nlohmann::json parsedSettings = json.as<nlohmann::json>();
       settings.patch(parsedSettings);
     } else {
       Serial.print(F("Error parsing saved settings file: "));
@@ -291,24 +291,24 @@ void Settings::serialize(std::ifstream &stream, const bool prettyPrint) {
   root["wifi_mode"] = wifiModeToString(this->wifiMode);
   root["default_transition_period"] = this->defaultTransitionPeriod;
 
-  JsonArray channelArr = root.createNestedArray("rf24_channels");
+  nlohmann::json channelArr = root.createNestedArray("rf24_channels");
   JsonHelpers::vectorToJsonArr<RF24Channel, std::string>(channelArr, rf24Channels, RF24ChannelHelpers::nameFromValue);
 
-  JsonArray deviceIdsArr = root.createNestedArray("device_ids");
+  nlohmann::json deviceIdsArr = root.createNestedArray("device_ids");
   JsonHelpers::copyFrom<uint16_t>(deviceIdsArr, this->deviceIds);
 
-  JsonArray gatewayConfigsArr = root.createNestedArray("gateway_configs");
+  nlohmann::json gatewayConfigsArr = root.createNestedArray("gateway_configs");
   for (size_t i = 0; i < this->gatewayConfigs.size(); i++) {
-    JsonArray elmt = gatewayConfigsArr.createNestedArray();
+    nlohmann::json elmt = gatewayConfigsArr.createNestedArray();
     elmt.add(this->gatewayConfigs[i]->deviceId);
     elmt.add(this->gatewayConfigs[i]->port);
     elmt.add(this->gatewayConfigs[i]->protocolVersion);
   }
 
-  JsonArray groupStateFieldArr = root.createNestedArray("group_state_fields");
+  nlohmann::json groupStateFieldArr = root.createNestedArray("group_state_fields");
   JsonHelpers::vectorToJsonArr<GroupStateField, const char*>(groupStateFieldArr, groupStateFields, GroupStateFieldHelpers::getFieldName);
 
-  dumpGroupIdAliases(root.as<JsonObject>());
+  dumpGroupIdAliases(root.as<nlohmann::json>());
 
   if (prettyPrint) {
     serializeJsonPretty(root, stream);

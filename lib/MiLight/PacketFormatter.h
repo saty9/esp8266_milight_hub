@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include <functional>
 #include <MiLightRemoteType.h>
-#include <ArduinoJson.h>
+#include <json.hpp>
 #include <GroupState.h>
 #include <GroupStateStore.h>
 #include <Settings.h>
@@ -82,7 +82,7 @@ public:
   virtual void prepare(uint16_t deviceId, uint8_t groupId);
   virtual void format(uint8_t const* packet, char* buffer);
 
-  virtual BulbId parsePacket(const uint8_t* packet, JsonObject result);
+  virtual BulbId parsePacket(const uint8_t* packet, nlohmann::json result);
   virtual BulbId currentBulbId() const;
 
   static void formatV1Packet(uint8_t const* packet, char* buffer);

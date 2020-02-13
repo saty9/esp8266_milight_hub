@@ -136,20 +136,20 @@ bool ColorTransition::isFinished() {
   return finished;
 }
 
-void ColorTransition::childSerialize(JsonObject& json) {
+void ColorTransition::childSerialize(nlohmann::json& json) {
   json[F("type")] = F("color");
 
-  JsonArray currentColorArr = json.createNestedArray(F("current_color"));
+  nlohmann::json currentColorArr = json.createNestedArray(F("current_color"));
   currentColorArr.add(currentColor.r);
   currentColorArr.add(currentColor.g);
   currentColorArr.add(currentColor.b);
 
-  JsonArray endColorArr = json.createNestedArray(F("end_color"));
+  nlohmann::json endColorArr = json.createNestedArray(F("end_color"));
   endColorArr.add(endColor.r);
   endColorArr.add(endColor.g);
   endColorArr.add(endColor.b);
 
-  JsonArray stepSizesArr = json.createNestedArray(F("step_sizes"));
+  nlohmann::json stepSizesArr = json.createNestedArray(F("step_sizes"));
   stepSizesArr.add(stepSizes.r);
   stepSizesArr.add(stepSizes.g);
   stepSizesArr.add(stepSizes.b);

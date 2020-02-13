@@ -92,7 +92,7 @@ void FUT089PacketFormatter::enableNightMode() {
   command(FUT089_ON | 0x80, arg);
 }
 
-BulbId FUT089PacketFormatter::parsePacket(const uint8_t *packet, JsonObject result) {
+BulbId FUT089PacketFormatter::parsePacket(const uint8_t *packet, nlohmann::json result) {
   if (stateStore == NULL) {
     printf("ERROR: stateStore not set.  Prepare was not called!  **THIS IS A BUG**\n");
     BulbId fakeId(0, 0, REMOTE_TYPE_FUT089);

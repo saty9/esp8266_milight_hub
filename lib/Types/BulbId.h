@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <MiLightRemoteType.h>
-#include <ArduinoJson.h>
+#include <json.hpp>
 #include "string"
 
 struct BulbId {
@@ -18,6 +18,6 @@ struct BulbId {
 
   uint32_t getCompactId() const;
   std::string getHexDeviceId() const;
-  void serialize(JsonObject json) const;
-  void serialize(JsonArray json) const;
+  void serialize(nlohmann::json json) const;
+  //void serialize(nlohmann::json json) const;
 };

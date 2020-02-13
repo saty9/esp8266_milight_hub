@@ -1,4 +1,4 @@
-#include <ArduinoJson.h>
+#include <json.hpp>
 #include <GroupStateField.h>
 #include <RF24PowerLevel.h>
 #include <RF24Channel.h>
@@ -141,9 +141,9 @@ public:
   void save();
   std::string toJson(const bool prettyPrint = true);
   void serialize(std::ifstream& stream, const bool prettyPrint = false);
-  void updateDeviceIds(JsonArray arr);
-  void updateGatewayConfigs(JsonArray arr);
-  void patch(JsonObject obj);
+  void updateDeviceIds(nlohmann::json arr);
+  void updateGatewayConfigs(nlohmann::json arr);
+  void patch(nlohmann::json obj);
   std::string mqttServer();
   uint16_t mqttPort();
   std::map<std::string, BulbId>::const_iterator findAlias(MiLightRemoteType deviceType, uint16_t deviceId, uint8_t groupId);
@@ -200,17 +200,17 @@ public:
 protected:
   size_t _autoRestartPeriod;
 
-  void parseGroupIdAliases(JsonObject json);
-  void dumpGroupIdAliases(JsonObject json);
+  void parseGroupIdAliases(nlohmann::json json);
+  void dumpGroupIdAliases(nlohmann::json json);
 
   static WifiMode wifiModeFromString(const std::string& mode);
   static std::string wifiModeToString(WifiMode mode);
 
   template <typename T>
-  void setIfPresent(JsonObject obj, const char* key, T& var) {
-    if (obj.containsKey(key)) {
-      JsonVariant val = obj[key];
-      var = val.as<T>();
+  void setIfPresent(nlohmann::json obj, const char* key, T& var) {
+    if (obj.find(key) != obj.end()) {
+      nlohmann::json val = obj[key];
+      var = val;
     }
   }
 };
